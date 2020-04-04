@@ -1,2 +1,2 @@
-# Chess-App-
+# Chess-App
 C++ console chess
