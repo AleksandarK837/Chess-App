@@ -431,7 +431,7 @@ bool ChessBoard::movedKnightTo(Figure &knight, int row, int col)
 		if (chessBoxEnd.getFigure()->getIsWhite() == knight.getIsWhite())
 		{ //check if there is figure with the same color at this box
 			cout << "You cannot capture your own figure!\n";
-			//return false;
+			return false;
 		}
 		else
 		{ //destroy opponent's figure and replace it with the horse
