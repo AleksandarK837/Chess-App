@@ -13,7 +13,7 @@ void ChessGame::moveFigure(ChessBox & start, ChessBox & end)
 {
 	if (start.getFigure()->getIsWhite() == isWhitePlayerTurn)
 	{
-		if (chessBoard.moveFigureTo(start, end))
+		if (chessBoard.movedFigureTo(start, end))
 		{
 			isWhitePlayerTurn = !isWhitePlayerTurn;
 		}

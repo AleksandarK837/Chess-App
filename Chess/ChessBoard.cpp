@@ -26,7 +26,7 @@ ChessBoard::~ChessBoard()
 }
 
 
-bool ChessBoard::moveFigureTo(ChessBox & start, ChessBox & end)
+bool ChessBoard::movedFigureTo(ChessBox & start, ChessBox & end)
 {
 	Figure &currentFigure = *start.getFigure();
 	if (currentFigure.getFigureType() == "Pawn")

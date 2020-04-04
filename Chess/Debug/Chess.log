@@ -5,11 +5,10 @@
   Figure.cpp
   King.cpp
   Knight.cpp
-  main.cpp
   Pawn.cpp
   Queen.cpp
   Rook.cpp
   Generating Code...
 d:\c++ projects\chess\chess\chessboard.cpp(270): warning C4715: 'ChessBoard::freePathBetweenBoxesRook': not all control paths return a value
 d:\c++ projects\chess\chess\chessboard.cpp(174): warning C4715: 'ChessBoard::isInChess': not all control paths return a value
-  Chess.vcxproj -> D:\C++ projects\Chess\Debug\Chess.exe
+LINK : fatal error LNK1561: entry point must be defined

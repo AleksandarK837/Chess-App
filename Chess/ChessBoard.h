@@ -19,7 +19,7 @@ private:
 	ChessBox *chessBoard[ROW_SIZE][COL_SIZE];
 
 public:
-	bool moveFigureTo(ChessBox &start, ChessBox &end);
+	bool movedFigureTo(ChessBox &start, ChessBox &end);
 	void placeFigures(); //fill the chess board
 
 private:
