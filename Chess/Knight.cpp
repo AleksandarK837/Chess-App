@@ -4,12 +4,11 @@ Knight::Knight(int row, int col, bool isWhite) : Figure(row, col, isWhite)
 {
 }
 
-bool Knight::movedTo(int row, int col)
+void Knight::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		cout << "Position is not valid\n";
-		return false;
+		throw std::logic_error("Position is not valid!");
 	}
 
 	// we move horse (2 steps up/down and 1 aside) or (1 step up/down  and 2 aside)
@@ -23,10 +22,8 @@ bool Knight::movedTo(int row, int col)
 	}
 	else
 	{
-		cout << "Invalid Knight Position\n";
-		return false;
+		throw std::logic_error("Invalid Knight Position!");
 	}
-	return true;
 }
 
 Figure * Knight::clone() const

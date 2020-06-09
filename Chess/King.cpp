@@ -4,12 +4,11 @@ King::King(int row, int col, bool isWhite) : Figure(row, col, isWhite)
 {
 }
 
-bool King::movedTo(int row, int col)
+void King::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		cout << "Position is not valid\n";
-		return false;
+		throw std::logic_error("Position is not valid!");
 	}
 
 	//move king up, down, left, right, bottom left, bottom right, up left, up right
@@ -29,10 +28,8 @@ bool King::movedTo(int row, int col)
 
 	if (!isMoved)
 	{
-		cout << "Position is not valid\n";
-		return false;
+		throw std::logic_error("Position is not valid!");
 	}
-	return true;
 }
 
 Figure * King::clone() const

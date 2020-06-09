@@ -12,5 +12,8 @@ private:
 
 public:
 	void startGame();
-	void moveFigure(ChessBox &start, ChessBox &end);
+	void moveFigure(int fromRow, int fromColumnt, int toRow, int toColumn);
+
+private:
+	void moveFigure(ChessBox start, ChessBox end);
 };

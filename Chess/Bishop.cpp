@@ -4,23 +4,19 @@ Bishop::Bishop(int row, int col, bool isWhite) : Figure(row, col, isWhite)
 {
 }
 
-bool Bishop::movedTo(int row, int col)
+void Bishop::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		cout << "Position is not valid\n";
-		return false;
+		throw std::logic_error("Position is not valid!");
 	}
 
 	if (abs(this->row - row) != abs(this->col - col))
 	{
-		cout << "Invalid bishop coordinates\n";
-		return false;
+		throw std::logic_error("Invalid Bishop coordinates!");
 	}
-
 	setRow(row);
 	setCol(col);
-	return true;
 }
 
 Figure * Bishop::clone() const

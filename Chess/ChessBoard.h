@@ -19,13 +19,14 @@ private:
 	ChessBox *chessBoard[ROW_SIZE][COL_SIZE];
 
 public:
-	bool movedFigureTo(ChessBox &start, ChessBox &end);
+	bool moveFigureTo(ChessBox &start, ChessBox &end);
 	void placeFigures(); //fill the chess board
 
+	ChessBox &getChessBoxByCoordinates(int row, int column);
 private:
-	bool movedKnightTo(Figure &knight, int row, int col);
-	bool movedPawnTo(Figure &pawn, int row, int col);
-	bool movedOtherFigures(Figure &figure, int row, int col);
+	void moveKnightTo(Figure &knight, int row, int col);
+	void movePawnTo(Figure &pawn, int row, int col);
+	void moveOtherFigures(Figure &figure, int row, int col);
 
 	bool PathBetweenBoxesFree(const ChessBox &start, const ChessBox &end);
 	bool freePathBetweenBoxesRook(const ChessBox &start, const ChessBox &end);

@@ -4,12 +4,11 @@ Rook::Rook(int row, int col, bool isWhite) : Figure(row, col, isWhite)
 {
 }
 
-bool Rook::movedTo(int row, int col)
+void Rook::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		cout << "Position is not valid\n";
-		return false;
+		throw std::logic_error("Position is not valid!");
 	}
 
 	// we move rook only up/down or only aside
@@ -23,10 +22,8 @@ bool Rook::movedTo(int row, int col)
 	}
 	else
 	{
-		cout << "Invalid rook position\n";
-		return false;
+		throw std::logic_error("Invalid Rook position!");
 	}
-	return true;
 }
 
 Figure * Rook::clone() const

@@ -25,7 +25,6 @@ public:
 
 	void destroyFigure();
 	bool isFigureOn();
-
 private:
 	void copyFrom(const ChessBox &rhs);
 	void clear();

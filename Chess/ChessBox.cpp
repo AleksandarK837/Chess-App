@@ -75,7 +75,10 @@ void ChessBox::copyFrom(const ChessBox & rhs)
 	row = rhs.row;
 	col = rhs.col;
 	isWhite = rhs.isWhite;
-	currentFigure = rhs.currentFigure->clone();
+	if (rhs.currentFigure != nullptr)
+	{
+		currentFigure = rhs.currentFigure->clone();
+	}
 }
 
 void ChessBox::clear()

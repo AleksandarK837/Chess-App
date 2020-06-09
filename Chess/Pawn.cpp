@@ -5,12 +5,11 @@ Pawn::Pawn(int row, int col, bool isWhite) : Figure(row, col, isWhite)
 	isMoved = false;
 }
 
-bool Pawn::movedTo(int row, int col)
+void Pawn::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		cout << "Position is not valid\n";
-		return false;
+		throw std::logic_error("Position is not valid!");
 	}
 	if (this->isWhite)
 	{
@@ -28,8 +27,7 @@ bool Pawn::movedTo(int row, int col)
 			}
 			else
 			{
-				cout << "Invalid Pawn Position\n";
-				return false;
+				throw std::logic_error("Invalid Pawn Position!");
 			}
 		}
 		else
@@ -41,8 +39,7 @@ bool Pawn::movedTo(int row, int col)
 			}
 			else
 			{
-				cout << "Invalid Pawn Position\n";
-				return false;
+				throw std::logic_error("Invalid Pawn Position!");
 			}
 			this->isMoved = true;
 		}
@@ -63,8 +60,7 @@ bool Pawn::movedTo(int row, int col)
 			}
 			else
 			{
-				cout << "Invalid Pawn Position\n";
-				return false;
+				throw std::logic_error("Invalid Pawn Position!");
 			}
 		}
 		else
@@ -76,13 +72,11 @@ bool Pawn::movedTo(int row, int col)
 			}
 			else
 			{
-				cout << "Invalid Pawn Position\n";
-				return false;
+				throw std::logic_error("Invalid Pawn Position!");
 			}
 			this->isMoved = true;
 		}
 	}
-	return true;
 }
 
 Figure * Pawn::clone() const

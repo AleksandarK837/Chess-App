@@ -4,12 +4,11 @@ Queen::Queen(int row, int col, bool isWhite) : Figure(row, col, isWhite)
 {
 }
 
-bool Queen::movedTo(int row, int col)
+void Queen::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		cout << "Position is not valid\n";
-		return false;
+		throw std::logic_error("Position is not valid!");
 	}
 
 	if (this->row == row)
@@ -27,10 +26,8 @@ bool Queen::movedTo(int row, int col)
 	}
 	else
 	{
-		cout << "Invalid Queen coordinates\n";
-		return false;
+		throw std::logic_error("Invalid Queen coordinates!");
 	}
-	return true;
 }
 
 Figure * Queen::clone() const

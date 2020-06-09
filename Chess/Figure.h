@@ -25,7 +25,7 @@ public:
 
 	bool isValidPosition(int row, int col) const;
 	void destroyFigure();
-	virtual bool movedTo(int row, int col) = 0;
+	virtual void moveTo(int row, int col) = 0;
 	virtual Figure *clone() const = 0;
 	virtual string getFigureType() const = 0;
 };

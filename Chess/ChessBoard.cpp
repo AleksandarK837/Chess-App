@@ -26,29 +26,29 @@ ChessBoard::~ChessBoard()
 }
 
 
-bool ChessBoard::movedFigureTo(ChessBox & start, ChessBox & end)
+bool ChessBoard::moveFigureTo(ChessBox & start, ChessBox & end)
 {
 	Figure &currentFigure = *start.getFigure();
-	if (currentFigure.getFigureType() == "Pawn")
+	try
 	{
-		if (!movedPawnTo(currentFigure, end.getRow(), end.getCol()))
+		if (currentFigure.getFigureType() == "Pawn")
 		{
-			return false;
+			movePawnTo(currentFigure, end.getRow(), end.getCol());
+		}
+		else if (currentFigure.getFigureType() == "Knight")
+		{
+			moveKnightTo(currentFigure, end.getRow(), end.getCol());
+		}
+		else
+		{
+			//move king and queen like rook or bishop
+			moveOtherFigures(currentFigure, end.getRow(), end.getCol());
 		}
 	}
-	else if (currentFigure.getFigureType() == "Knight")
+	catch (const std::logic_error &e)
 	{
-		if (!movedKnightTo(currentFigure, end.getRow(), end.getCol()))
-		{
-			return false;
-		}
-	}
-	else
-	{
-		if (!movedOtherFigures(currentFigure, end.getRow(), end.getCol())) //move king and queen like rook or bishop
-		{
-			return false;
-		}
+		cerr << e.what();
+		return false;
 	}
 	return true;
 }
@@ -72,7 +72,8 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 			{
 				if (chessBoard[row][column]->getFigure()->getIsWhite() != isWhiteKing)
 				{
-					if (chessBoard[row][column]->getFigure()->getFigureType() == "Rook" || chessBoard[row][column]->getFigure()->getFigureType() == "Queen")
+					const Figure &figure = *chessBoard[row][column]->getFigure();
+					if (figure.getFigureType() == "Rook" || figure.getFigureType() == "Queen")
 					{
 						return true;
 					}
@@ -111,7 +112,7 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 			}
 		}
 	}
-	//check Bishop
+	//check Bishop and Queen
 	int rowBishopChange[] = { 1, 1, -1, -1 };
 	int columnBishopChange[] = { -1, 1, -1, 1 };
 	for (int i = 0; i < 4; i++)
@@ -126,7 +127,8 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 			{
 				if (chessBoard[row][column]->getFigure()->getIsWhite() != isWhiteKing)
 				{
-					if (chessBoard[row][column]->getFigure()->getFigureType() == "Bishop" || chessBoard[row][column]->getFigure()->getFigureType() == "Queen")
+					const Figure &figure = *chessBoard[row][column]->getFigure();
+					if (figure.getFigureType() == "Bishop" || figure.getFigureType() == "Queen")
 					{
 						return true;
 					}
@@ -142,7 +144,6 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 			}
 			row = row + rowBishopChange[i];
 			column = column + columnBishopChange[i];
-
 		}
 	}
 
@@ -167,6 +168,29 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 			if ((chessBoard[row][column]->isFigureOn()) && ((figure.getIsWhite() != isWhiteKing) && (figure.getFigureType() == "Pawn")))
 			{
 				return true;
+			}
+		}
+
+		//check King
+		int rowKingChange[] = { 1, 1, 1, 0, 0, -1, -1, -1 };
+		int columnKingChange[] = { 1, 0, -1, 1, -1, -1, 0, 1 };
+		for (int i = 0; i < 8; i++)
+		{
+			int row = kingSBox.getRow();
+			int column = kingSBox.getCol();
+			row = row + rowKingChange[i];
+			column = column + columnKingChange[i];
+			if (areValidChessBoxCoordinates(row, column))
+			{
+				const Figure &figure = *chessBoard[row][column]->getFigure();
+				if (chessBoard[row][column]->isFigureOn())
+				{
+					if ((figure.getIsWhite() != isWhiteKing) && (figure.getFigureType() == "King"))
+					{
+						return true;
+					}
+				}
+
 			}
 		}
 		return false;
@@ -195,7 +219,7 @@ ChessBox & ChessBoard::getKingsBox(bool isWhiteKing) const
 			}
 		}
 	}
-	throw "The king was not found!";
+	throw std::logic_error("The king was not found!");
 }
 
 bool ChessBoard::areValidChessBoxCoordinates(int row, int col) const
@@ -392,6 +416,15 @@ void ChessBoard::placeFigures()
 	}
 }
 
+ChessBox & ChessBoard::getChessBoxByCoordinates(int row, int column)
+{
+	if (!areValidChessBoxCoordinates(row, column))
+	{
+		throw std::logic_error("Invalid chessbox coordinates!");
+	}
+	return *chessBoard[row][column];
+}
+
 void ChessBoard::copyFrom(const ChessBoard & rhs)
 {
 	for (int i = 0; i < ROW_SIZE; i++)
@@ -422,7 +455,7 @@ void ChessBoard::clear()
 	}
 }
 
-bool ChessBoard::movedKnightTo(Figure &knight, int row, int col)
+void ChessBoard::moveKnightTo(Figure &knight, int row, int col)
 {
 	ChessBox &chessBoxStart = *chessBoard[knight.getRow()][knight.getCol()];
 	ChessBox &chessBoxEnd = *chessBoard[row][col];
@@ -430,51 +463,61 @@ bool ChessBoard::movedKnightTo(Figure &knight, int row, int col)
 	{
 		if (chessBoxEnd.getFigure()->getIsWhite() == knight.getIsWhite())
 		{ //check if there is figure with the same color at this box
-			cout << "You cannot capture your own figure!\n";
-			return false;
+			throw std::logic_error("You cannot capture your own figure!");
 		}
 		else
 		{ //destroy opponent's figure and replace it with the horse
-			if (!knight.movedTo(row, col))
+			Figure *endBoxFigure = nullptr;
+			try
 			{
-				return false;
+				endBoxFigure = chessBoxEnd.getFigure()->clone();
+				knight.moveTo(row, col);
+				chessBoxEnd.setFigure(knight);
+				chessBoxStart.destroyFigure();
 			}
-			Figure *endBoxFigure = chessBoxEnd.getFigure()->clone();
-			chessBoxEnd.setFigure(knight);
-			chessBoxStart.destroyFigure();
+			catch (const std::logic_error &e)
+			{
+				cerr << e.what();
+			}
+			catch (const std::bad_alloc &b)
+			{
+				cerr << b.what();
+			}
 
 			if (isInChess(knight.getIsWhite()))
 			{
-				knight.movedTo(chessBoxStart.getCol(), chessBoxStart.getCol()); //back to last position
+				knight.moveTo(chessBoxStart.getCol(), chessBoxStart.getCol()); //back to last position
 				chessBoxStart.setFigure(knight);
 				chessBoxEnd.setFigure(*endBoxFigure); //restore desotroyed figure
-				delete endBoxFigure;
-				return false;
+				throw std::logic_error("You are in chess! Protect your king!");
 			}
 			delete endBoxFigure;
 		}
 	}
 	else
 	{
-		if (!knight.movedTo(row, col))
+		try
 		{
-			return false;
+			knight.moveTo(row, col);
+			chessBoxEnd.setFigure(knight);
+			chessBoxStart.destroyFigure();
 		}
-		chessBoxEnd.setFigure(knight);
-		chessBoxStart.destroyFigure();
-
+		catch (const std::logic_error &e)
+		{
+			cerr << e.what();
+		}
+		
 		if (isInChess(knight.getIsWhite()))
 		{ //back to last position
-			knight.movedTo(chessBoxStart.getRow(), chessBoxStart.getCol());
+			knight.moveTo(chessBoxStart.getRow(), chessBoxStart.getCol());
 			chessBoxStart.setFigure(knight);
 			chessBoxEnd.destroyFigure();
-			return false;
+			throw std::logic_error("You are in chess! Protect your king!");
 		}
 	}
-	return true;
 }
 
-bool ChessBoard::movedPawnTo(Figure & pawn, int row, int col)
+void ChessBoard::movePawnTo(Figure & pawn, int row, int col)
 {
 	ChessBox &chessBoxStart = *chessBoard[pawn.getRow()][pawn.getCol()];
 	ChessBox &chessBoxEnd = *chessBoard[row][col];
@@ -487,34 +530,40 @@ bool ChessBoard::movedPawnTo(Figure & pawn, int row, int col)
 			{
 				if (chessBoxEnd.getFigure()->getIsWhite() != pawn.getIsWhite())
 				{ // //destroy opponent's figure and replace it with the pawn
-					if (!pawn.movedTo(row, col))
+					Figure *endBoxFigure = nullptr;
+					try
 					{
-						return false;
+						endBoxFigure = chessBoxEnd.getFigure()->clone();
+						pawn.moveTo(row, col);
+						chessBoxEnd.setFigure(pawn);
+						chessBoxStart.destroyFigure();
 					}
-					Figure *endBoxFigure = chessBoxEnd.getFigure()->clone();
-					chessBoxEnd.setFigure(pawn);
-					chessBoxStart.destroyFigure();
+					catch (const std::logic_error &e)
+					{
+						cerr << e.what();
+					}
+					catch (const std::bad_alloc &b)
+					{
+						cerr << b.what();
+					}
 
 					if (isInChess(pawn.getIsWhite()))
 					{
-						pawn.movedTo(chessBoxStart.getCol(), chessBoxStart.getCol()); //back to last position
+						pawn.moveTo(chessBoxStart.getRow(), chessBoxStart.getCol()); //back to last position
 						chessBoxStart.setFigure(pawn);
 						chessBoxEnd.setFigure(*endBoxFigure); //restore desotroyed figure
-						delete endBoxFigure;
-						return false;
+						throw std::logic_error("You are in chess! Protect your king!");
 					}
 					delete endBoxFigure;
 				}
 				else
 				{
-					cout << "You cannot capture your own figure!";
-					return false;
+					throw std::logic_error("You cannot capture your own figure!");
 				}
 			}
 			else
 			{
-				cout << "Invalid pawn coordinates! Cannot move there without capturing opponent's figure\n";
-				return false;
+				throw std::logic_error("Invalid pawn coordinates! Cannot move there without capturing opponent's figure!");
 			}
 
 		}
@@ -522,37 +571,40 @@ bool ChessBoard::movedPawnTo(Figure & pawn, int row, int col)
 		{
 			if (!chessBoxEnd.isFigureOn())
 			{ // move pawn to the new position
-				if (!pawn.movedTo(row, col))
+				try
 				{
-					return false;
+					pawn.moveTo(row, col);
+				}
+				catch (const std::logic_error &e)
+				{
+					cerr << e.what();
 				}
 				chessBoxEnd.setFigure(pawn);
 				chessBoxStart.destroyFigure();
 
 				if (isInChess(pawn.getIsWhite()))
 				{ //back to last position
-					pawn.movedTo(chessBoxStart.getRow(), chessBoxStart.getCol());
+					pawn.setRow(chessBoxStart.getRow());
+					pawn.setCol(chessBoxStart.getCol());
+
 					chessBoxStart.setFigure(pawn);
 					chessBoxEnd.destroyFigure();
-					return false;
+					throw std::logic_error("You are in chess! Protect your king!");
 				}
 			}
 			else
 			{
-				cout << "Pawn cannot capture figure on this coordiantes!\n";
-				return false;
+				throw std::logic_error("Pawn cannot capture figure on this coordiantes!");
 			}
 		}
 	}
 	else
 	{
-		cout << "The path between the boxes is not free\n";
-		return false;
+		throw std::logic_error("The path between the boxes is not free!");
 	}
-	return true;
 }
 
-bool ChessBoard::movedOtherFigures(Figure & figure, int row, int col)
+void ChessBoard::moveOtherFigures(Figure & figure, int row, int col)
 {
 	ChessBox &chessBoxStart = *chessBoard[figure.getRow()][figure.getCol()];
 	ChessBox &chessBoxEnd = *chessBoard[row][col];
@@ -563,53 +615,61 @@ bool ChessBoard::movedOtherFigures(Figure & figure, int row, int col)
 		{
 			if (chessBoxStart.getFigure()->getIsWhite() == chessBoxEnd.getFigure()->getIsWhite())
 			{ //check if there is figure with the same color at this box
-				cout << "Invalid movement! You cannot attack your figure!\n";
-				return false;
+				throw std::logic_error("Invalid movement! You cannot attack your figure!");
 			}
 			else
 			{ //destroy opponent's figure and replace it with the current
-
-				if (!figure.movedTo(row, col))
+				Figure *endBoxFigure = nullptr;
+				try
 				{
-					return false;
+					endBoxFigure = chessBoxEnd.getFigure()->clone();
+					figure.moveTo(row, col);
+					chessBoxEnd.setFigure(figure);
+					chessBoxStart.destroyFigure();
 				}
-				Figure *endBoxFigure = chessBoxEnd.getFigure()->clone();
-				chessBoxEnd.setFigure(figure);
-				chessBoxStart.destroyFigure();
-
+				catch (const std::logic_error &e)
+				{
+					cerr << e.what();
+				}
+				catch (const std::bad_alloc &b)
+				{
+					cerr << b.what();
+				}
+				
 				if (isInChess(figure.getIsWhite()))
 				{
-					figure.movedTo(chessBoxStart.getCol(), chessBoxStart.getCol()); //back to last position
+					figure.moveTo(chessBoxStart.getRow(), chessBoxStart.getCol()); //back to last position
 					chessBoxStart.setFigure(figure);
 					chessBoxEnd.setFigure(*endBoxFigure); //restore desotroyed figure
-					delete endBoxFigure;
-					return false;
+					throw std::logic_error("You are in chess! Protect your king!");
 				}
 				delete endBoxFigure;
 			}
 		}
 		else
 		{ // if there is no figure at end position
-			if (!figure.movedTo(row, col))
+			try
 			{
-				return false;
+				figure.moveTo(row, col);
+			}
+			catch (const std::logic_error &e)
+			{
+				cerr << e.what();
 			}
 			chessBoxEnd.setFigure(figure);
 			chessBoxStart.destroyFigure();
 
 			if (isInChess(figure.getIsWhite()))
 			{ //back to last position
-				figure.movedTo(chessBoxStart.getRow(), chessBoxStart.getCol());
+				figure.moveTo(chessBoxStart.getRow(), chessBoxStart.getCol());
 				chessBoxStart.setFigure(figure);
 				chessBoxEnd.destroyFigure();
-				return false;
+				throw std::logic_error("You are in chess! Protect your king!");
 			}
 		}
 	}
 	else
 	{
-		cout << "The path between the boxes is not free\n";
-		return false;
+		throw std::logic_error("The path between the boxes is not free!");
 	}
-	return true;
 }
