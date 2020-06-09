@@ -11,7 +11,7 @@ void Figure::setRow(int row)
 {
 	if (row > ROW_SIZE - 1 || row < 0)
 	{
-		throw std::logic_error("Invalid row corrdinate!");
+		throw std::logic_error("Invalid row corrdinate!\n");
 	}
 	this->row = row;
 }
@@ -20,7 +20,7 @@ void Figure::setCol(int col)
 {
 	if (col > COL_SIZE - 1 and col < 0)
 	{
-		throw std::logic_error("Invalid column corrdinate!");
+		throw std::logic_error("Invalid column corrdinate!\n");
 	}
 	this->col = col;
 }

@@ -8,7 +8,7 @@ void Rook::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		throw std::logic_error("Position is not valid!");
+		throw std::logic_error("Position is not valid!\n");
 	}
 
 	// we move rook only up/down or only aside
@@ -22,7 +22,7 @@ void Rook::moveTo(int row, int col)
 	}
 	else
 	{
-		throw std::logic_error("Invalid Rook position!");
+		throw std::logic_error("Invalid Rook position!\n");
 	}
 }
 

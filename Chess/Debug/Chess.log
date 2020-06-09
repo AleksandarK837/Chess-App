@@ -1,2 +1,14 @@
-﻿  main.cpp
+﻿  Bishop.cpp
+  ChessBoard.cpp
+  ChessBox.cpp
+  ChessGame.cpp
+  Figure.cpp
+  King.cpp
+  Knight.cpp
+  main.cpp
+  Pawn.cpp
+  Queen.cpp
+  Rook.cpp
+  Generating Code...
+d:\c++ projects\chess\chess\chessboard.cpp(197): warning C4715: 'ChessBoard::isInChess': not all control paths return a value
   Chess.vcxproj -> D:\C++ projects\Chess\Debug\Chess.exe

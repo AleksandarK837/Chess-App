@@ -8,7 +8,7 @@ void King::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		throw std::logic_error("Position is not valid!");
+		throw std::logic_error("Position is not valid!\n");
 	}
 
 	//move king up, down, left, right, bottom left, bottom right, up left, up right
@@ -28,7 +28,7 @@ void King::moveTo(int row, int col)
 
 	if (!isMoved)
 	{
-		throw std::logic_error("Position is not valid!");
+		throw std::logic_error("Position is not valid!\n");
 	}
 }
 

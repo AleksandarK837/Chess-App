@@ -8,7 +8,7 @@ void Queen::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		throw std::logic_error("Position is not valid!");
+		throw std::logic_error("Position is not valid!\n");
 	}
 
 	if (this->row == row)
@@ -17,7 +17,7 @@ void Queen::moveTo(int row, int col)
 	}
 	else if (this->col = col)
 	{
-		setRow(row); //move Queen like Rook aside
+		setRow(row); //move Queen like Rook left/right
 	}
 	else if (abs(this->col - col) == abs(this->row - row)) // move Queen like Bishop
 	{
@@ -26,7 +26,7 @@ void Queen::moveTo(int row, int col)
 	}
 	else
 	{
-		throw std::logic_error("Invalid Queen coordinates!");
+		throw std::logic_error("Invalid Queen coordinates!\n");
 	}
 }
 

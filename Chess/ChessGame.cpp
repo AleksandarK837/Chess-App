@@ -40,4 +40,8 @@ void ChessGame::moveFigure(int fromRow, int fromColumn, int toRow, int toColumn)
 	{
 		cerr << e.what();
 	}
+	catch (const std::bad_alloc &b)
+	{
+		cerr << b.what();
+	}
 }

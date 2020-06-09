@@ -8,12 +8,12 @@ void Bishop::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		throw std::logic_error("Position is not valid!");
+		throw std::logic_error("Position is not valid!\n");
 	}
 
 	if (abs(this->row - row) != abs(this->col - col))
 	{
-		throw std::logic_error("Invalid Bishop coordinates!");
+		throw std::logic_error("Invalid Bishop coordinates!\n");
 	}
 	setRow(row);
 	setCol(col);

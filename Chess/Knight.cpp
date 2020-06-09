@@ -8,7 +8,7 @@ void Knight::moveTo(int row, int col)
 {
 	if (!isValidPosition(row, col))
 	{
-		throw std::logic_error("Position is not valid!");
+		throw std::logic_error("Position is not valid!\n");
 	}
 
 	// we move horse (2 steps up/down and 1 aside) or (1 step up/down  and 2 aside)
@@ -22,7 +22,7 @@ void Knight::moveTo(int row, int col)
 	}
 	else
 	{
-		throw std::logic_error("Invalid Knight Position!");
+		throw std::logic_error("Invalid Knight Position!\n");
 	}
 }
 
