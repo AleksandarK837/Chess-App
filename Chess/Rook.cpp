@@ -1,12 +1,12 @@
 #include "Rook.h"
 
-Rook::Rook(int row, int col, bool isWhite) : Figure(row, col, isWhite)
+Rook::Rook(int row, int column, bool isWhite) : Figure(row, column, isWhite)
 {
 }
 
-void Rook::moveTo(int row, int col)
+void Rook::moveTo(int row, int column)
 {
-	if (!isValidPosition(row, col))
+	if (!isValidPosition(row, column))
 	{
 		throw std::logic_error("Position is not valid!\n");
 	}
@@ -14,9 +14,9 @@ void Rook::moveTo(int row, int col)
 	// we move rook only up/down or only aside
 	if (this->row == row)
 	{
-		setCol(col);
+		setColumn(column);
 	}
-	else if (this->col == col)
+	else if (this->column == column)
 	{
 		setRow(row);
 	}

@@ -1,27 +1,27 @@
 #include "Queen.h"
 
-Queen::Queen(int row, int col, bool isWhite) : Figure(row, col, isWhite)
+Queen::Queen(int row, int column, bool isWhite) : Figure(row, column, isWhite)
 {
 }
 
-void Queen::moveTo(int row, int col)
+void Queen::moveTo(int row, int column)
 {
-	if (!isValidPosition(row, col))
+	if (!isValidPosition(row, column))
 	{
 		throw std::logic_error("Position is not valid!\n");
 	}
 
 	if (this->row == row)
 	{
-		setCol(col); //move Queen like Rook up/down
+		setColumn(column); //move Queen like Rook up/down
 	}
-	else if (this->col = col)
+	else if (this->column = column)
 	{
 		setRow(row); //move Queen like Rook left/right
 	}
-	else if (abs(this->col - col) == abs(this->row - row)) // move Queen like Bishop
+	else if (abs(this->column - column) == abs(this->row - row)) // move Queen like Bishop
 	{
-		setCol(col);
+		setColumn(column);
 		setRow(row);
 	}
 	else

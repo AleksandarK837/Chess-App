@@ -26,30 +26,21 @@ ChessBoard::~ChessBoard()
 }
 
 
-bool ChessBoard::moveFigureTo(ChessBox & start, ChessBox & end)
+void ChessBoard::moveFigureTo(ChessBox & start, ChessBox & end)
 {
 	Figure &currentFigure = *start.getFigure();
-	try
+	if (currentFigure.getFigureType() == "Pawn")
 	{
-		if (currentFigure.getFigureType() == "Pawn")
-		{
-			movePawnTo(currentFigure, end.getRow(), end.getCol());
-		}
-		else if (currentFigure.getFigureType() == "Knight")
-		{
-			moveKnightTo(currentFigure, end.getRow(), end.getCol());
-		}
-		else
-		{ //move king and queen like rook or bishop
-			moveOtherFigures(currentFigure, end.getRow(), end.getCol());
-		}
+		movePawnTo(currentFigure, end.getRow(), end.getColumn());
 	}
-	catch (const std::logic_error &e)
+	else if (currentFigure.getFigureType() == "Knight")
 	{
-		cerr << e.what();
-		return false;
+		moveKnightTo(currentFigure, end.getRow(), end.getColumn());
 	}
-	return true;
+	else
+	{ //move king and queen like rook or bishop
+		moveOtherFigures(currentFigure, end.getRow(), end.getColumn());
+	}
 }
 
 bool ChessBoard::isInChess(bool isWhiteKing) const
@@ -62,14 +53,14 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 	for (int i = 0; i < 4; i++)
 	{
 		int row = kingSBox.getRow();
-		int column = kingSBox.getCol();
+		int column = kingSBox.getColumn();
 		row = row + rowChange[i];
 		column = column + columnChange[i];
 		while (areValidChessBoxCoordinates(row, column))
 		{
 			if (chessBoard[row][column]->isFigureOn())
 			{
-				if (chessBoard[row][column]->getFigure()->getIsWhite() != isWhiteKing)
+				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != isWhiteKing)
 				{
 					const Figure &figure = *chessBoard[row][column]->getFigure();
 					if (figure.getFigureType() == "Rook" || figure.getFigureType() == "Queen")
@@ -96,13 +87,13 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 	for (int i = 0; i < 8; i++)
 	{
 		int row = kingSBox.getRow();
-		int column = kingSBox.getCol();
+		int column = kingSBox.getColumn();
 		row = row + rowKnightChange[i];
 		column = column + columnKnightChange[i];
 
 		if (areValidChessBoxCoordinates(row, column))
 		{
-			if ((chessBoard[row][column]->isFigureOn()) && (chessBoard[row][column]->getFigure()->getIsWhite() != isWhiteKing))
+			if ((chessBoard[row][column]->isFigureOn()) && (chessBoard[row][column]->getFigure()->isWhiteFigure() != isWhiteKing))
 			{
 				if (chessBoard[row][column]->getFigure()->getFigureType() == "Knight")
 				{
@@ -117,14 +108,14 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 	for (int i = 0; i < 4; i++)
 	{
 		int row = kingSBox.getRow();
-		int column = kingSBox.getCol();
+		int column = kingSBox.getColumn();
 		row = row + rowBishopChange[i];
 		column = column + columnBishopChange[i];
 		while (areValidChessBoxCoordinates(row, column))
 		{
 			if (chessBoard[row][column]->isFigureOn())
 			{
-				if (chessBoard[row][column]->getFigure()->getIsWhite() != isWhiteKing)
+				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != isWhiteKing)
 				{
 					const Figure &figure = *chessBoard[row][column]->getFigure();
 					if (figure.getFigureType() == "Bishop" || figure.getFigureType() == "Queen")
@@ -158,13 +149,13 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 	for (int i = 0; i < 2; i++)
 	{
 		int row = kingSBox.getRow();
-		int column = kingSBox.getCol();
+		int column = kingSBox.getColumn();
 		row = row + pawnRowChange;
 		column = column + pawnColumnChange[i];
 		if (areValidChessBoxCoordinates(row, column))
 		{
 			const Figure &figure = *chessBoard[row][column]->getFigure();
-			if ((chessBoard[row][column]->isFigureOn()) && ((figure.getIsWhite() != isWhiteKing) && (figure.getFigureType() == "Pawn")))
+			if ((chessBoard[row][column]->isFigureOn()) && ((figure.isWhiteFigure() != isWhiteKing) && (figure.getFigureType() == "Pawn")))
 			{
 				return true;
 			}
@@ -176,7 +167,7 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 		for (int i = 0; i < 8; i++)
 		{
 			int row = kingSBox.getRow();
-			int column = kingSBox.getCol();
+			int column = kingSBox.getColumn();
 			row = row + rowKingChange[i];
 			column = column + columnKingChange[i];
 			if (areValidChessBoxCoordinates(row, column))
@@ -184,7 +175,7 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 				const Figure &figure = *chessBoard[row][column]->getFigure();
 				if (chessBoard[row][column]->isFigureOn())
 				{
-					if ((figure.getIsWhite() != isWhiteKing) && (figure.getFigureType() == "King"))
+					if ((figure.isWhiteFigure() != isWhiteKing) && (figure.getFigureType() == "King"))
 					{
 						return true;
 					}
@@ -209,10 +200,10 @@ ChessBox & ChessBoard::getKingsBox(bool isWhiteKing) const
 {
 	for (int i = 0; i < ROW_SIZE; i++)
 	{
-		for (int j = 0; j < COL_SIZE; j++)
+		for (int j = 0; j < COLUMN_SIZE; j++)
 		{
-			Figure &figure = *chessBoard[i][j]->getFigure();
-			if ((chessBoard[i][j]->isFigureOn()) && (figure.getFigureType() == "King" && (figure.getIsWhite() == isWhiteKing)))
+			const Figure &figure = *chessBoard[i][j]->getFigure();
+			if ((chessBoard[i][j]->isFigureOn()) && (figure.getFigureType() == "King" && (figure.isWhiteFigure() == isWhiteKing)))
 			{
 				return *chessBoard[i][j];
 			}
@@ -221,9 +212,9 @@ ChessBox & ChessBoard::getKingsBox(bool isWhiteKing) const
 	throw std::logic_error("The king was not found!\n");
 }
 
-bool ChessBoard::areValidChessBoxCoordinates(int row, int col) const
+bool ChessBoard::areValidChessBoxCoordinates(int row, int column) const
 {
-	if (row > ROW_SIZE - 1 || row < 0 || col > COL_SIZE - 1 || col < 0)
+	if (row > ROW_SIZE - 1 || row < 0 || column > COLUMN_SIZE - 1 || column < 0)
 	{
 		return false;
 	}
@@ -232,13 +223,13 @@ bool ChessBoard::areValidChessBoxCoordinates(int row, int col) const
 
 bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox & end)
 {
-	if (start.getRow() == end.getRow()) //move only by row
-	{
+	if (start.getRow() == end.getRow())
+	{ //move only by row
 		int startRow = start.getRow();
 
-		if (start.getCol() < end.getCol()) //move right
-		{
-			for (int i = start.getCol() + 1; i < end.getCol(); i++)
+		if (start.getColumn() < end.getColumn()) 
+		{ //move right
+			for (int i = start.getColumn() + 1; i < end.getColumn(); i++)
 			{
 				if (chessBoard[startRow][i]->isFigureOn())
 				{
@@ -247,9 +238,9 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 			}
 			return true;
 		}
-		else if (start.getCol() > end.getCol()) //move left
-		{
-			for (int i = end.getCol() + 1; i < start.getCol(); i++)
+		else if (start.getColumn() > end.getColumn()) 
+		{ //move left
+			for (int i = end.getColumn() + 1; i < start.getColumn(); i++)
 			{
 				if (chessBoard[startRow][i]->isFigureOn())
 				{
@@ -260,12 +251,12 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 			return true;
 		}
 	}
-	else if (start.getCol() == end.getCol()) //move only by column
-	{
-		int startCol = start.getCol();
+	else if (start.getColumn() == end.getColumn()) 
+	{ //move only by column
+		int startCol = start.getColumn();
 
-		if (start.getRow() < end.getRow()) //move up
-		{
+		if (start.getRow() < end.getRow())
+		{ //move up
 			for (int i = start.getRow() + 1; i < end.getRow(); i++)
 			{
 				if (chessBoard[i][startCol]->isFigureOn())
@@ -276,8 +267,8 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 			}
 			return true;
 		}
-		else if (start.getRow() > end.getRow()) //move down
-		{
+		else if (start.getRow() > end.getRow()) 
+		{ //move down
 			for (int i = end.getRow() + 1; i < start.getRow(); i++)
 			{
 				if (chessBoard[i][startCol]->isFigureOn())
@@ -294,12 +285,12 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 
 bool ChessBoard::freePathBetweenBoxesBishop(const ChessBox & start, const ChessBox & end)
 {
-	bool correctBishopEndBox = (abs(start.getRow() - end.getRow())) == abs((start.getCol() - end.getCol()));
-	if (((end.getRow() < start.getRow()) && (end.getCol() > start.getCol())) && correctBishopEndBox)
+	bool correctBishopEndBox = (abs(start.getRow() - end.getRow())) == abs((start.getColumn() - end.getColumn()));
+	if (((end.getRow() < start.getRow()) && (end.getColumn() > start.getColumn())) && correctBishopEndBox)
 	{// down right
 		int row = start.getRow() - 1;
-		int column = start.getCol() + 1;
-		while (row != end.getRow() && column != end.getCol())
+		int column = start.getColumn() + 1;
+		while (row != end.getRow() && column != end.getColumn())
 		{
 			if (chessBoard[row][column]->isFigureOn())
 			{
@@ -310,11 +301,11 @@ bool ChessBoard::freePathBetweenBoxesBishop(const ChessBox & start, const ChessB
 		}
 		return true;
 	}
-	else if (((end.getRow() > start.getRow()) && (end.getCol() > start.getCol())) && correctBishopEndBox)
+	else if (((end.getRow() > start.getRow()) && (end.getColumn() > start.getColumn())) && correctBishopEndBox)
 	{// up right
 		int row = start.getRow() + 1;
-		int column = start.getCol() + 1;
-		while (row != end.getRow() && column != end.getCol())
+		int column = start.getColumn() + 1;
+		while (row != end.getRow() && column != end.getColumn())
 		{
 			if (chessBoard[row][column]->isFigureOn())
 			{
@@ -325,11 +316,11 @@ bool ChessBoard::freePathBetweenBoxesBishop(const ChessBox & start, const ChessB
 		}
 		return true;
 	}
-	else if ((((end.getRow() < start.getRow()) && (end.getCol() < start.getCol()))) && correctBishopEndBox)
+	else if ((((end.getRow() < start.getRow()) && (end.getColumn() < start.getColumn()))) && correctBishopEndBox)
 	{// down left
 		int row = start.getRow() - 1;
-		int column = start.getCol() - 1;
-		while (row != end.getRow() && column != end.getCol())
+		int column = start.getColumn() - 1;
+		while (row != end.getRow() && column != end.getColumn())
 		{
 			if (chessBoard[row][column]->isFigureOn())
 			{
@@ -340,12 +331,12 @@ bool ChessBoard::freePathBetweenBoxesBishop(const ChessBox & start, const ChessB
 		}
 		return true;
 	}
-	else if ((((end.getRow() > start.getRow()) && (end.getCol() < start.getCol()))) && correctBishopEndBox)
+	else if ((((end.getRow() > start.getRow()) && (end.getColumn() < start.getColumn()))) && correctBishopEndBox)
 	{// up left
 		int row = start.getRow() + 1;
-		int column = start.getCol() - 1;
+		int column = start.getColumn() - 1;
 
-		while (row != end.getRow() && column != end.getCol())
+		while (row != end.getRow() && column != end.getColumn())
 		{
 			if (chessBoard[row][column]->isFigureOn())
 			{
@@ -363,7 +354,7 @@ bool ChessBoard::freePathBetweenBoxesBishop(const ChessBox & start, const ChessB
 void ChessBoard::placeFigures()
 {
 	bool isWhiteBox = true;
-	for (int i = 0; i < COL_SIZE; i++)
+	for (int i = 0; i < COLUMN_SIZE; i++)
 	{
 		chessBoard[1][i] = new ChessBox(1, i, isWhiteBox, Pawn(1, i, true)); // place white pawns
 		chessBoard[6][i] = new ChessBox(6, i, !isWhiteBox, Pawn(6, i, false)); //place black pawns
@@ -371,7 +362,7 @@ void ChessBoard::placeFigures()
 	}
 
 	isWhiteBox = false;
-	for (int i = 0; i < COL_SIZE; i++)
+	for (int i = 0; i < COLUMN_SIZE; i++)
 	{
 		if (i == 0 || i == 7)
 		{
@@ -403,7 +394,7 @@ void ChessBoard::placeFigures()
 	isWhiteBox = true;
 	for (int i = 2; i < ROW_SIZE - 2; i++)
 	{
-		for (int j = 0; j < COL_SIZE; j++)
+		for (int j = 0; j < COLUMN_SIZE; j++)
 		{
 			chessBoard[i][j] = new ChessBox(i, j, isWhiteBox); // place empty boxes
 			isWhiteBox = !isWhiteBox;
@@ -411,11 +402,11 @@ void ChessBoard::placeFigures()
 	}
 }
 
-ChessBox & ChessBoard::getChessBoxByCoordinates(int row, int column) const
+const ChessBox & ChessBoard::getChessBoxByCoordinates(int row, int column) const
 {
 	if (!areValidChessBoxCoordinates(row, column))
 	{
-		throw std::logic_error("Invalid chessbox coordinates!");
+		throw std::logic_error("Invalid chessbox coordinates!\n");
 	}
 	return *chessBoard[row][column];
 }
@@ -424,15 +415,15 @@ void ChessBoard::copyFrom(const ChessBoard & rhs)
 {
 	for (int i = 0; i < ROW_SIZE; i++)
 	{
-		for (int j = 0; j < COL_SIZE; j++)
+		for (int j = 0; j < COLUMN_SIZE; j++)
 		{
 			if (rhs.chessBoard[i][j]->getFigure() == nullptr)
 			{
-				chessBoard[i][j] = new ChessBox(rhs.chessBoard[i][j]->getRow(), rhs.chessBoard[i][j]->getCol(), rhs.chessBoard[i][j]->getIsWhite());
+				chessBoard[i][j] = new ChessBox(rhs.chessBoard[i][j]->getRow(), rhs.chessBoard[i][j]->getColumn(), rhs.chessBoard[i][j]->getIsWhite());
 			}
 			else
 			{
-				chessBoard[i][j] = new ChessBox(rhs.chessBoard[i][j]->getRow(), rhs.chessBoard[i][j]->getCol(), rhs.chessBoard[i][j]->getIsWhite(),
+				chessBoard[i][j] = new ChessBox(rhs.chessBoard[i][j]->getRow(), rhs.chessBoard[i][j]->getColumn(), rhs.chessBoard[i][j]->getIsWhite(),
 					*rhs.chessBoard[i][j]->getFigure());
 			}
 		}
@@ -443,57 +434,56 @@ void ChessBoard::clear()
 {
 	for (int i = 0; i < ROW_SIZE; i++)
 	{
-		for (int j = 0; j < COL_SIZE; j++)
+		for (int j = 0; j < COLUMN_SIZE; j++)
 		{
 			delete chessBoard[i][j];
 		}
 	}
 }
 
-void ChessBoard::moveKnightTo(Figure &knight, int row, int col)
+void ChessBoard::moveKnightTo(Figure &knight, int row, int column)
 {
-	ChessBox &chessBoxStart = *chessBoard[knight.getRow()][knight.getCol()];
-	ChessBox &chessBoxEnd = *chessBoard[row][col];
+	ChessBox &chessBoxEnd = *chessBoard[row][column];
 	if (chessBoxEnd.isFigureOn())
 	{
-		if (chessBoxEnd.getFigure()->getIsWhite() == knight.getIsWhite())
+		if (chessBoxEnd.getFigure()->isWhiteFigure() == knight.isWhiteFigure())
 		{
-			throw std::logic_error("You cannot capture your own figure!\n");
+			throw std::logic_error("You cannot capture your own figure! Move again!\n");
 		}
 		else
 		{ //destroy opponent's figure and replace it with the horse
-			moveToNonEmptyBox(knight, row, col);
+			destroyOponentsFigure(knight, row, column);
 		}
 	}
 	else
 	{
-		moveToEmptyBox(knight, row, col);
+		moveToEmptyBox(knight, row, column);
 	}
 }
 
-void ChessBoard::movePawnTo(Figure &pawn, int row, int col)
+void ChessBoard::movePawnTo(Figure &pawn, int row, int column)
 {
-	ChessBox &chessBoxStart = *chessBoard[pawn.getRow()][pawn.getCol()];
-	ChessBox &chessBoxEnd = *chessBoard[row][col];
+	ChessBox &chessBoxStart = *chessBoard[pawn.getRow()][pawn.getColumn()];
+	ChessBox &chessBoxEnd = *chessBoard[row][column];
 
 	if (PathBetweenBoxesFree(chessBoxStart, chessBoxEnd))
 	{
-		if ((chessBoxStart.getCol() - chessBoxEnd.getCol() != 0))
+		if ((chessBoxStart.getColumn() - chessBoxEnd.getColumn() != 0))
 		{//check if the pawn is trying to destroy a figure
 			if (chessBoxEnd.isFigureOn())
 			{
-				if (chessBoxEnd.getFigure()->getIsWhite() != pawn.getIsWhite())
+				if (chessBoxEnd.getFigure()->isWhiteFigure() != pawn.isWhiteFigure())
 				{ //destroy opponent's figure and replace it with the pawn
-					moveToNonEmptyBox(pawn, row, col);
+					destroyOponentsFigure(pawn, row, column);
 				}
 				else
 				{
-					throw std::logic_error("You cannot capture your own figure!\n");
+					throw std::logic_error("You cannot capture your own figure! Move again!\n");
 				}
 			}
 			else
 			{
-				throw std::logic_error("Invalid pawn coordinates! Cannot move there without capturing opponent's figure!\n");
+				throw std::logic_error("Invalid pawn coordinates! Cannot move there without capturing opponent's figure! Move again!\n");
 			}
 
 		}
@@ -501,99 +491,98 @@ void ChessBoard::movePawnTo(Figure &pawn, int row, int col)
 		{
 			if (!chessBoxEnd.isFigureOn())
 			{ 
-				moveToEmptyBox(pawn, row, col);
+				moveToEmptyBox(pawn, row, column);
 			}
 			else
 			{
-				throw std::logic_error("Pawn cannot capture figure on this coordiantes!\n");
+				throw std::logic_error("Pawn cannot capture figure on this coordiantes! Move again!\n");
 			}
 		}
 	}
 	else
 	{
-		throw std::logic_error("The path between the boxes is not free!\n");
+		throw std::logic_error("The path between the boxes is not free! Move again!\n");
 	}
 
-	if (pawn.getIsWhite() && pawn.getCol() == COL_SIZE - 1)
+	if (pawn.isWhiteFigure() && pawn.getColumn() == COLUMN_SIZE - 1)
 	{ // reborn Queen with white pawn
-		chessBoxEnd.setFigure(Queen(chessBoxEnd.getRow(), chessBoxEnd.getCol(), true));
+		chessBoxEnd.setFigure(Queen(chessBoxEnd.getRow(), chessBoxEnd.getColumn(), true));
 	}
-	else if (!pawn.getIsWhite() && pawn.getCol() == 0)
+	else if (!pawn.isWhiteFigure() && pawn.getColumn() == 0)
 	{ // reborn Queen with black pawn
-		chessBoxEnd.setFigure(Queen(chessBoxEnd.getRow(), chessBoxEnd.getCol(), false));
+		chessBoxEnd.setFigure(Queen(chessBoxEnd.getRow(), chessBoxEnd.getColumn(), false));
 	}
 }
 
-void ChessBoard::moveOtherFigures(Figure & figure, int row, int col)
+void ChessBoard::moveOtherFigures(Figure & figure, int row, int column)
 {
-	ChessBox &chessBoxStart = *chessBoard[figure.getRow()][figure.getCol()];
-	ChessBox &chessBoxEnd = *chessBoard[row][col];
+	ChessBox &chessBoxStart = *chessBoard[figure.getRow()][figure.getColumn()];
+	ChessBox &chessBoxEnd = *chessBoard[row][column];
 
 	if (PathBetweenBoxesFree(chessBoxStart, chessBoxEnd))
 	{
 		if (chessBoxEnd.isFigureOn())
 		{
-			if (chessBoxStart.getFigure()->getIsWhite() == chessBoxEnd.getFigure()->getIsWhite())
+			if (chessBoxStart.getFigure()->isWhiteFigure() == chessBoxEnd.getFigure()->isWhiteFigure())
 			{ 
-				throw std::logic_error("Invalid movement! You cannot attack your figure!\n");
+				throw std::logic_error("Invalid movement! You cannot attack your figure! Move again!\n");
 			}
 			else
 			{ //destroy opponent's figure and replace it with the current
-				moveToNonEmptyBox(figure, row, col);
+				destroyOponentsFigure(figure, row, column);
 			}
 		}
 		else
 		{
-			moveToEmptyBox(figure, row, col);
+			moveToEmptyBox(figure, row, column);
 		}
 	}
 	else
 	{
-		throw std::logic_error("The path between the boxes is not free!\n");
+		throw std::logic_error("The path between the boxes is not free! Move again!\n");
 	}
 }
 
-void ChessBoard::moveToNonEmptyBox(Figure & figure, int row, int col)
+void ChessBoard::destroyOponentsFigure(Figure & figure, int row, int column)
 {
-	ChessBox &chessBoxStart = *chessBoard[figure.getRow()][figure.getCol()];
-	ChessBox &chessBoxEnd = *chessBoard[row][col];
-	Figure *endBoxFigure = nullptr;
+	ChessBox &chessBoxStart = *chessBoard[figure.getRow()][figure.getColumn()];
+	ChessBox &chessBoxEnd = *chessBoard[row][column];
+	Figure *endBoxFigure = chessBoxEnd.getFigure()->clone();
 
-	endBoxFigure = chessBoxEnd.getFigure()->clone();
-	figure.moveTo(row, col);
+	figure.moveTo(row, column);
 	chessBoxEnd.setFigure(figure);
 	chessBoxStart.destroyFigure();
 
-	if (isInChess(figure.getIsWhite()))
+	if (isInChess(figure.isWhiteFigure()))
 	{
 		//back to last position
 		figure.setRow(chessBoxStart.getRow());
-		figure.setCol(chessBoxStart.getCol());
+		figure.setColumn(chessBoxStart.getColumn());
 		chessBoxStart.setFigure(figure);
 		chessBoxEnd.setFigure(*endBoxFigure); //restore desotroyed figure
 
 		delete endBoxFigure;
-		throw std::logic_error("You are in chess! Protect your king!\n");
+		throw std::logic_error("You are in chess! Protect your king! Move again!\n");
 	}
 	delete endBoxFigure;
 }
 
-void ChessBoard::moveToEmptyBox(Figure & figure, int row, int col)
+void ChessBoard::moveToEmptyBox(Figure & figure, int row, int column)
 {
-	ChessBox &chessBoxStart = *chessBoard[figure.getRow()][figure.getCol()];
-	ChessBox &chessBoxEnd = *chessBoard[row][col];
+	ChessBox &chessBoxStart = *chessBoard[figure.getRow()][figure.getColumn()];
+	ChessBox &chessBoxEnd = *chessBoard[row][column];
 
-	figure.moveTo(row, col);
+	figure.moveTo(row, column);
 	chessBoxEnd.setFigure(figure);
 	chessBoxStart.destroyFigure();
 
-	if (isInChess(figure.getIsWhite()))
+	if (isInChess(figure.isWhiteFigure()))
 	{ //back to last position
 		figure.setRow(chessBoxStart.getRow());
-		figure.setCol(chessBoxStart.getCol());
+		figure.setColumn(chessBoxStart.getColumn());
 
 		chessBoxStart.setFigure(figure);
 		chessBoxEnd.destroyFigure();
-		throw std::logic_error("You are in chess! Protect your king!\n");
+		throw std::logic_error("You are in chess! Protect your king! Move again!\n");
 	}
 }

@@ -1,9 +1,9 @@
 #include "Figure.h"
 
-Figure::Figure(int row, int col, bool isWhite) : isWhite(isWhite)
+Figure::Figure(int row, int column, bool isWhite) : isWhite(isWhite)
 {
 	setRow(row);
-	setCol(col);
+	setColumn(column);
 	inPlay = true;
 }
 
@@ -16,13 +16,13 @@ void Figure::setRow(int row)
 	this->row = row;
 }
 
-void Figure::setCol(int col)
+void Figure::setColumn(int column)
 {
-	if (col > COL_SIZE - 1 and col < 0)
+	if (column > COLUMN_SIZE - 1 and column < 0)
 	{
 		throw std::logic_error("Invalid column corrdinate!\n");
 	}
-	this->col = col;
+	this->column = column;
 }
 
 int Figure::getRow() const
@@ -30,19 +30,19 @@ int Figure::getRow() const
 	return row;
 }
 
-int Figure::getCol() const
+int Figure::getColumn() const
 {
-	return col;
+	return column;
 }
 
-bool Figure::getIsWhite() const
+bool Figure::isWhiteFigure() const
 {
 	return isWhite;
 }
 
-bool Figure::isValidPosition(int row, int col) const
+bool Figure::isValidPosition(int row, int column) const
 {
-	if (this->row == row and this->col == col)
+	if (this->row == row and this->column == column)
 	{
 		return false;
 	}
@@ -52,6 +52,6 @@ bool Figure::isValidPosition(int row, int col) const
 void Figure::destroyFigure()
 {
 	row = 0;
-	col = 0;
+	column = 0;
 	inPlay = false;
 }

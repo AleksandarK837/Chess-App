@@ -1,22 +1,22 @@
 #include "Bishop.h"
 
-Bishop::Bishop(int row, int col, bool isWhite) : Figure(row, col, isWhite)
+Bishop::Bishop(int row, int column, bool isWhite) : Figure(row, column, isWhite)
 {
 }
 
-void Bishop::moveTo(int row, int col)
+void Bishop::moveTo(int row, int column)
 {
-	if (!isValidPosition(row, col))
+	if (!isValidPosition(row, column))
 	{
 		throw std::logic_error("Position is not valid!\n");
 	}
 
-	if (abs(this->row - row) != abs(this->col - col))
+	if (abs(this->row - row) != abs(this->column - column))
 	{
 		throw std::logic_error("Invalid Bishop coordinates!\n");
 	}
 	setRow(row);
-	setCol(col);
+	setColumn(column);
 }
 
 Figure * Bishop::clone() const

@@ -1,12 +1,12 @@
 #include "King.h"
 
-King::King(int row, int col, bool isWhite) : Figure(row, col, isWhite)
+King::King(int row, int column, bool isWhite) : Figure(row, column, isWhite)
 {
 }
 
-void King::moveTo(int row, int col)
+void King::moveTo(int row, int column)
 {
-	if (!isValidPosition(row, col))
+	if (!isValidPosition(row, column))
 	{
 		throw std::logic_error("Position is not valid!\n");
 	}
@@ -17,10 +17,10 @@ void King::moveTo(int row, int col)
 	bool isMoved = false;
 	for (int i = 0; i < 8; i++)
 	{
-		if ((this->row + rowCoordinates[i] == row) && (this->col + colCoordinates[i] == col))
+		if ((this->row + rowCoordinates[i] == row) && (this->column + colCoordinates[i] == column))
 		{
 			setRow(row);
-			setCol(col);
+			setColumn(column);
 			isMoved = true;
 			break;
 		}

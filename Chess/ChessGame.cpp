@@ -11,16 +11,9 @@ void ChessGame::startGame()
 
 void ChessGame::moveFigure(ChessBox start, ChessBox end)
 {
-	if (start.getFigure()->getIsWhite() == isWhitePlayerTurn)
+	if (start.getFigure()->isWhiteFigure() == isWhitePlayerTurn)
 	{
-		if (chessBoard.moveFigureTo(start, end))
-		{
-			isWhitePlayerTurn = !isWhitePlayerTurn;
-		}
-		else
-		{
-			cout << "Move again!\n";
-		}
+		chessBoard.moveFigureTo(start, end);
 	}
 	else
 	{
@@ -28,13 +21,16 @@ void ChessGame::moveFigure(ChessBox start, ChessBox end)
 	}
 }
 
-void ChessGame::moveFigure(int fromRow, int fromColumn, int toRow, int toColumn)
+void ChessGame::moveFigure(int fromRow, char fromColumn, int toRow, char toColumn)
 {
+
 	try
 	{
-		const ChessBox &start = chessBoard.getChessBoxByCoordinates(fromRow, fromColumn);
-		const ChessBox &end = chessBoard.getChessBoxByCoordinates(toRow, toColumn);
-		moveFigure(start, end);
+		const ChessBox &startBox = chessBoard.getChessBoxByCoordinates(fromRow - 1, (int)fromColumn - 97);
+		const ChessBox &endBox = chessBoard.getChessBoxByCoordinates(toRow - 1, (int)toColumn - 97);
+		moveFigure(startBox, endBox);
+		isWhitePlayerTurn = !isWhitePlayerTurn;
+		cout << "Successfully moved from " << fromRow << fromColumn << " to " << toRow << toColumn << endl;
 	}
 	catch (const std::logic_error &e)
 	{

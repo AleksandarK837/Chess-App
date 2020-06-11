@@ -1,29 +1,29 @@
 #include "Pawn.h"
 
-Pawn::Pawn(int row, int col, bool isWhite) : Figure(row, col, isWhite)
+Pawn::Pawn(int row, int column, bool isWhite) : Figure(row, column, isWhite)
 {
 	isMoved = false;
 }
 
-void Pawn::moveTo(int row, int col)
+void Pawn::moveTo(int row, int column)
 {
-	if (!isValidPosition(row, col))
+	if (!isValidPosition(row, column))
 	{
 		throw std::logic_error("Position is not valid!\n");
 	}
 	if (this->isWhite)
 	{
-		bool moveOneStepUp = (this->row + 1 == row && this->col == col);
-		bool moveTwoStepsUp = (this->row + 2 == row && this->col == col);
-		bool moveUpLeft = (this->row + 1 == row and this->col - 1 == col);
-		bool moveUpRight = (this->row + 1 == row and this->col + 1 == col);
+		bool moveOneStepUp = (this->row + 1 == row && this->column == column);
+		bool moveTwoStepsUp = (this->row + 2 == row && this->column == column);
+		bool moveUpLeft = (this->row + 1 == row and this->column - 1 == column);
+		bool moveUpRight = (this->row + 1 == row and this->column + 1 == column);
 
 		if (this->isMoved)
 		{
 			if (moveOneStepUp || moveUpLeft || moveUpRight)
 			{
 				setRow(row);
-				setCol(col);
+				setColumn(column);
 			}
 			else
 			{
@@ -35,7 +35,7 @@ void Pawn::moveTo(int row, int col)
 			if (moveOneStepUp || moveUpLeft || moveUpRight || moveTwoStepsUp)
 			{
 				setRow(row);
-				setCol(col);
+				setColumn(column);
 			}
 			else
 			{
@@ -46,17 +46,17 @@ void Pawn::moveTo(int row, int col)
 	}
 	else
 	{
-		bool moveOneStepUp = (this->row - 1 == row && this->col == col);
-		bool moveTwoStepsUp = (this->row - 2 == row && this->col == col);
-		bool moveUpLeft = (this->row - 1 == row and this->col - 1 == col);
-		bool moveUpRight = (this->row - 1 == row and this->col + 1 == col);
+		bool moveOneStepUp = (this->row - 1 == row && this->column == column);
+		bool moveTwoStepsUp = (this->row - 2 == row && this->column == column);
+		bool moveUpLeft = (this->row - 1 == row and this->column - 1 == column);
+		bool moveUpRight = (this->row - 1 == row and this->column + 1 == column);
 
 		if (this->isMoved)
 		{
 			if (moveOneStepUp || moveUpLeft || moveUpRight)
 			{
 				setRow(row);
-				setCol(col);
+				setColumn(column);
 			}
 			else
 			{
@@ -68,7 +68,7 @@ void Pawn::moveTo(int row, int col)
 			if (moveOneStepUp || moveUpLeft || moveUpRight || moveTwoStepsUp)
 			{
 				setRow(row);
-				setCol(col);
+				setColumn(column);
 			}
 			else
 			{

@@ -1,24 +1,24 @@
 #include "Knight.h"
 
-Knight::Knight(int row, int col, bool isWhite) : Figure(row, col, isWhite)
+Knight::Knight(int row, int column, bool isWhite) : Figure(row, column, isWhite)
 {
 }
 
-void Knight::moveTo(int row, int col)
+void Knight::moveTo(int row, int column)
 {
-	if (!isValidPosition(row, col))
+	if (!isValidPosition(row, column))
 	{
 		throw std::logic_error("Position is not valid!\n");
 	}
 
 	// we move horse (2 steps up/down and 1 aside) or (1 step up/down  and 2 aside)
 	int absRow = abs(this->row - row);
-	int absCol = abs(this->col - col);
+	int absCol = abs(this->column - column);
 
 	if ((absRow == 2 && absCol == 1) || (absRow == 1 and absCol == 2))
 	{
 		setRow(row);
-		setCol(col);
+		setColumn(column);
 	}
 	else
 	{

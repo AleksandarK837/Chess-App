@@ -1,11 +1,11 @@
 #include "ChessBox.h"
 
-ChessBox::ChessBox(int row, int col, bool isWhite, const Figure & currentfigure) : currentFigure(nullptr), row(row), col(col), isWhite(isWhite)
+ChessBox::ChessBox(int row, int column, bool isWhite, const Figure & currentfigure) : currentFigure(nullptr), row(row), column(column), isWhite(isWhite)
 {
 	setFigure(currentfigure);
 }
 
-ChessBox::ChessBox(int row, int col, bool isWhite) : row(row), col(col), isWhite(isWhite), currentFigure(nullptr)
+ChessBox::ChessBox(int row, int column, bool isWhite) : row(row), column(column), isWhite(isWhite), currentFigure(nullptr)
 {
 }
 
@@ -34,9 +34,9 @@ int ChessBox::getRow() const
 	return row;
 }
 
-int ChessBox::getCol() const
+int ChessBox::getColumn() const
 {
-	return col;
+	return column;
 }
 
 bool ChessBox::getIsWhite() const
@@ -73,7 +73,7 @@ bool ChessBox::isFigureOn()
 void ChessBox::copyFrom(const ChessBox & rhs)
 {
 	row = rhs.row;
-	col = rhs.col;
+	column = rhs.column;
 	isWhite = rhs.isWhite;
 	if (rhs.currentFigure != nullptr)
 	{
@@ -83,7 +83,7 @@ void ChessBox::copyFrom(const ChessBox & rhs)
 
 void ChessBox::clear()
 {
-	row = col = 0;
+	row = column = 0;
 	delete currentFigure;
 	currentFigure = nullptr;
 }

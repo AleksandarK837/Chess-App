@@ -16,31 +16,30 @@ public:
 	~ChessBoard();
 
 private:
-	ChessBox *chessBoard[ROW_SIZE][COL_SIZE];
+	ChessBox *chessBoard[ROW_SIZE][COLUMN_SIZE];
 
 public:
 	void placeFigures(); //fill the chess board
-	bool moveFigureTo(ChessBox &start, ChessBox &end);
+	void moveFigureTo(ChessBox &start, ChessBox &end);
 
 private:
-	void moveKnightTo(Figure &knight, int row, int col);
-	void movePawnTo(Figure &pawn, int row, int col);
-	void moveOtherFigures(Figure &figure, int row, int col);
-	void moveToNonEmptyBox(Figure &figure, int row, int col);
-	void moveToEmptyBox(Figure &figure, int row, int col);
+	void moveKnightTo(Figure &knight, int row, int column);
+	void movePawnTo(Figure &pawn, int row, int column);
+	void moveOtherFigures(Figure &figure, int row, int column);
+	void destroyOponentsFigure(Figure &figure, int row, int column);
+	void moveToEmptyBox(Figure &figure, int row, int column);
 
 	bool PathBetweenBoxesFree(const ChessBox &start, const ChessBox &end);
 	bool freePathBetweenBoxesRook(const ChessBox &start, const ChessBox &end);
 	bool freePathBetweenBoxesBishop(const ChessBox &start, const ChessBox &end);
 
-
 	bool isInChess(bool isWhiteKing) const;
-	bool areValidChessBoxCoordinates(int row, int col) const;
+	bool areValidChessBoxCoordinates(int row, int column) const;
 	ChessBox &getKingsBox(bool isWhiteKing) const;
 
 	void copyFrom(const ChessBoard &rhs);
 	void clear();
 
 public:
-	ChessBox &getChessBoxByCoordinates(int row, int column) const;
+	const ChessBox &getChessBoxByCoordinates(int row, int column) const;
 };

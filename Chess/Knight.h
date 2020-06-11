@@ -4,8 +4,8 @@
 class Knight : public Figure
 {
 public:
-	Knight(int row, int col, bool isWhite);
-	void moveTo(int row, int col) override;
+	Knight(int row, int column, bool isWhite);
+	void moveTo(int row, int column) override;
 	Figure *clone() const override;
 	std::string getFigureType() const override;
 };

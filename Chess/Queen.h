@@ -4,8 +4,8 @@
 class Queen : public Figure
 {
 public:
-	Queen(int row, int col, bool isWhite);
-	void moveTo(int row, int col) override;
+	Queen(int row, int column, bool isWhite);
+	void moveTo(int row, int column) override;
 	Figure *clone() const override;
 	std::string getFigureType() const override;
 };
