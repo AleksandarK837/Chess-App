@@ -41,3 +41,13 @@ void ChessGame::moveFigure(int fromRow, char fromColumn, int toRow, char toColum
 		cerr << b.what();
 	}
 }
+
+bool ChessGame::gameOver()
+{
+	if (chessBoard.isCheckmate(isWhitePlayerTurn))
+	{
+		cout << "Checkmate!\n";
+		return true;
+	}
+	return false;
+}

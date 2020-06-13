@@ -21,6 +21,7 @@ private:
 public:
 	void placeFigures(); //fill the chess board
 	void moveFigureTo(ChessBox &start, ChessBox &end);
+	bool isCheckmate(bool isWhitePlayer);
 
 private:
 	void moveKnightTo(Figure &knight, int row, int column);
@@ -33,9 +34,15 @@ private:
 	bool freePathBetweenBoxesRook(const ChessBox &start, const ChessBox &end);
 	bool freePathBetweenBoxesBishop(const ChessBox &start, const ChessBox &end);
 
+	bool playerHasPossileMoves(const Figure &figure);
+	bool protectKingWithKnight(int knightRowPosition, int knightColumnPosition);
+	bool protectKingWithPawn(int pawnRowPosition, int pawnColumnPosition);
+	bool canMoveKing(int kingRowPosition, int kingColumnPosition);
+	bool protectKingWithOtherFigures(int figureRowPosition, int figureColumnPosition, int rowChange[], int columnChange[]);
+
 	bool isInChess(bool isWhiteKing) const;
 	bool areValidChessBoxCoordinates(int row, int column) const;
-	ChessBox &getKingsBox(bool isWhiteKing) const;
+	const ChessBox &getKingsBox(bool isWhiteKing) const;
 
 	void copyFrom(const ChessBoard &rhs);
 	void clear();

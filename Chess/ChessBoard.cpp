@@ -25,7 +25,6 @@ ChessBoard::~ChessBoard()
 	clear();
 }
 
-
 void ChessBoard::moveFigureTo(ChessBox & start, ChessBox & end)
 {
 	Figure &currentFigure = *start.getFigure();
@@ -196,7 +195,7 @@ bool ChessBoard::PathBetweenBoxesFree(const ChessBox &start, const ChessBox &end
 	return false;
 }
 
-ChessBox & ChessBoard::getKingsBox(bool isWhiteKing) const
+const ChessBox & ChessBoard::getKingsBox(bool isWhiteKing) const
 {
 	for (int i = 0; i < ROW_SIZE; i++)
 	{
@@ -227,7 +226,7 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 	{ //move only by row
 		int startRow = start.getRow();
 
-		if (start.getColumn() < end.getColumn()) 
+		if (start.getColumn() < end.getColumn())
 		{ //move right
 			for (int i = start.getColumn() + 1; i < end.getColumn(); i++)
 			{
@@ -238,7 +237,7 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 			}
 			return true;
 		}
-		else if (start.getColumn() > end.getColumn()) 
+		else if (start.getColumn() > end.getColumn())
 		{ //move left
 			for (int i = end.getColumn() + 1; i < start.getColumn(); i++)
 			{
@@ -251,7 +250,7 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 			return true;
 		}
 	}
-	else if (start.getColumn() == end.getColumn()) 
+	else if (start.getColumn() == end.getColumn())
 	{ //move only by column
 		int startCol = start.getColumn();
 
@@ -267,7 +266,7 @@ bool ChessBoard::freePathBetweenBoxesRook(const ChessBox & start, const ChessBox
 			}
 			return true;
 		}
-		else if (start.getRow() > end.getRow()) 
+		else if (start.getRow() > end.getRow())
 		{ //move down
 			for (int i = end.getRow() + 1; i < start.getRow(); i++)
 			{
@@ -402,6 +401,362 @@ void ChessBoard::placeFigures()
 	}
 }
 
+bool ChessBoard::isCheckmate(bool isWhitePlayer)
+{
+	if (!isInChess(isWhitePlayer))
+	{
+		return false;
+	}
+
+	for (int i = 0; i < ROW_SIZE; i++)
+	{
+		for (int j = 0; j < COLUMN_SIZE; j++)
+		{
+			if (chessBoard[i][j]->isFigureOn())
+			{
+				Figure *currentFigure = chessBoard[i][j]->getFigure();
+				if (currentFigure->isWhiteFigure() == isWhitePlayer)
+				{
+					if (playerHasPossileMoves(*currentFigure))
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool ChessBoard::playerHasPossileMoves(const Figure &figure)
+{
+	int rowBishopChange[] = { 1, 1, -1, -1 };
+	int columnBishopChange[] = { -1, 1, -1, 1 };
+
+	int rowRookChange[] = { -1,1,0,0 };
+	int columnRookChange[] = { 0, 0, 1, -1 };
+
+	int row = figure.getRow();
+	int column = figure.getColumn();
+	if (figure.getFigureType() == "Knight")
+	{
+		return protectKingWithKnight(row, column);
+	}
+	else if (figure.getFigureType() == "Pawn")
+	{
+		return protectKingWithPawn(row, column);
+	}
+	else if (figure.getFigureType() == "Bishop")
+	{
+		return protectKingWithOtherFigures(row, column, rowBishopChange, columnBishopChange);
+	}
+	else if (figure.getFigureType() == "Rook")
+	{
+		return protectKingWithOtherFigures(row, column, rowRookChange, columnRookChange);
+	}
+	else if (figure.getFigureType() == "Queen")
+	{ // move Queen like rook or bishop
+		return protectKingWithOtherFigures(row, column, rowBishopChange, columnBishopChange) ||
+			   protectKingWithOtherFigures(row, column, rowRookChange, columnRookChange);
+	}
+	else
+	{
+		return canMoveKing(row, column);
+	}
+}
+
+bool ChessBoard::protectKingWithKnight(int knightRowPosition, int knightColumnPosition)
+{
+	int rowKnightChange[] = { 1, 1, -1, -1, 2, -2, 2, -2 };
+	int columnKnightChange[] = { 2, -2, 2, -2, 1, 1, -1, -1 };
+	ChessBox &startBox = *chessBoard[knightRowPosition][knightColumnPosition];
+	Figure *knightMovements = startBox.getFigure()->clone();
+	startBox.destroyFigure();
+
+	for (int i = 0; i < 8; i++)
+	{
+		int row = knightRowPosition;
+		int column = knightColumnPosition;
+		row = row + rowKnightChange[i];
+		column = column + columnKnightChange[i];
+		if (areValidChessBoxCoordinates(row, column))
+		{
+			if (chessBoard[row][column]->isFigureOn())
+			{
+				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != knightMovements->isWhiteFigure())
+				{
+					ChessBox &endBox = *chessBoard[row][column];
+					Figure *endBoxFigure = endBox.getFigure()->clone();
+					knightMovements->setRow(row);
+					knightMovements->setColumn(column);
+					endBox.setFigure(*knightMovements);
+					if (!isInChess(knightMovements->isWhiteFigure()))
+					{
+						knightMovements->setRow(knightRowPosition);
+						knightMovements->setColumn(knightColumnPosition);
+						startBox.setFigure(*knightMovements);
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+						delete knightMovements;
+						return true;
+					}
+					else
+					{
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+					}
+				}
+			}
+			else
+			{
+				ChessBox &endBox = *chessBoard[row][column];
+				knightMovements->setRow(row);
+				knightMovements->setColumn(column);
+				endBox.setFigure(*knightMovements);
+				if (!isInChess(knightMovements->isWhiteFigure()))
+				{
+					knightMovements->setRow(knightRowPosition);
+					knightMovements->setColumn(knightColumnPosition);
+					startBox.setFigure(*knightMovements);
+					endBox.destroyFigure();
+					delete knightMovements;
+					return true;
+				}
+				else
+				{
+					endBox.destroyFigure();
+				}
+			}
+		}
+	}
+	knightMovements->setRow(knightRowPosition);
+	knightMovements->setColumn(knightColumnPosition);
+	startBox.setFigure(*knightMovements);
+	delete knightMovements;
+	return false;
+}
+
+bool ChessBoard::protectKingWithPawn(int pawnRowPosition, int pawnColumnPosition)
+{
+	ChessBox &startBox = *chessBoard[pawnRowPosition][pawnColumnPosition];
+	Figure *pawnMovements = startBox.getFigure()->clone();
+	startBox.destroyFigure();
+	int row = pawnRowPosition;
+	int column = pawnColumnPosition;
+	int pawnRowChange = 1;
+	int pawnColumnChange[] = { -1, 1 };
+	if (!pawnMovements->isWhiteFigure())
+	{
+		pawnRowChange = -1;
+	}
+
+	if (!chessBoard[row + pawnRowChange][column]->isFigureOn())
+	{
+		ChessBox &endBox = *chessBoard[row + pawnRowChange][column];
+		pawnMovements->setRow(row + pawnRowChange);
+		pawnMovements->setColumn(column);
+		endBox.setFigure(*pawnMovements);
+		if (!isInChess(pawnMovements->isWhiteFigure()))
+		{
+			pawnMovements->setRow(pawnRowPosition);
+			pawnMovements->setColumn(pawnColumnPosition);
+			startBox.setFigure(*pawnMovements);
+			endBox.destroyFigure();
+			delete pawnMovements;
+			return true;
+		}
+		else
+		{
+			endBox.destroyFigure();
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (areValidChessBoxCoordinates(row + pawnRowChange, column + pawnColumnChange[i]))
+		{
+			if (chessBoard[row + pawnRowChange][column + pawnColumnChange[i]]->isFigureOn())
+			{
+				if (chessBoard[row + pawnRowChange][column + pawnColumnChange[i]]->getFigure()->isWhiteFigure() != pawnMovements->isWhiteFigure())
+				{
+					ChessBox &endBox = *chessBoard[row + pawnRowChange][column + pawnColumnChange[i]];
+					Figure *endBoxFigure = endBox.getFigure()->clone();
+					pawnMovements->setRow(row + pawnRowChange);
+					pawnMovements->setColumn(column + pawnColumnChange[i]);
+					endBox.setFigure(*pawnMovements);
+					if (!isInChess(pawnMovements->isWhiteFigure()))
+					{
+						pawnMovements->setRow(pawnRowPosition);
+						pawnMovements->setColumn(pawnColumnPosition);
+						startBox.setFigure(*pawnMovements);
+						endBox.setFigure(*endBoxFigure);
+						delete pawnMovements;
+						delete endBoxFigure;
+						return true;
+					}
+					else
+					{
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+					}
+				}
+			}
+		}
+	}
+	pawnMovements->setRow(pawnRowPosition);
+	pawnMovements->setColumn(pawnColumnPosition);
+	startBox.setFigure(*pawnMovements);
+	delete pawnMovements;
+	return false;
+}
+
+bool ChessBoard::canMoveKing(int kingRowPosition, int kingColumnPosition)
+{
+	int rowKingChange[] = { 1, 1, 1, 0, 0, -1, -1, -1 };
+	int columnKingChange[] = { 1, 0, -1, 1, -1, -1, 0, 1 };
+	ChessBox &startBox = *chessBoard[kingRowPosition][kingColumnPosition];
+	Figure *kingMovements = startBox.getFigure()->clone();
+	startBox.destroyFigure();
+
+	for (int i = 0; i < 8; i++)
+	{
+		int row = kingRowPosition;
+		int column = kingColumnPosition;
+		row = row + rowKingChange[i];
+		column = column + columnKingChange[i];
+		if (areValidChessBoxCoordinates(row, column))
+		{
+			if (chessBoard[row][column]->isFigureOn())
+			{
+				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != kingMovements->isWhiteFigure())
+				{
+					ChessBox &endBox = *chessBoard[row][column];
+					Figure *endBoxFigure = endBox.getFigure()->clone();
+					kingMovements->setRow(row);
+					kingMovements->setColumn(column);
+					endBox.setFigure(*kingMovements);
+					if (!isInChess(kingMovements->isWhiteFigure()))
+					{
+						kingMovements->setRow(kingRowPosition);
+						kingMovements->setColumn(kingColumnPosition);
+						startBox.setFigure(*kingMovements);
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+						delete kingMovements;
+						return true;
+					}
+					else
+					{
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+					}
+				}
+			}
+			else
+			{
+				ChessBox &endBox = *chessBoard[row][column];
+				kingMovements->setRow(row);
+				kingMovements->setColumn(column);
+				endBox.setFigure(*kingMovements);
+				if (!isInChess(kingMovements->isWhiteFigure()))
+				{
+					kingMovements->setRow(kingRowPosition);
+					kingMovements->setColumn(kingColumnPosition);
+					startBox.setFigure(*kingMovements);
+					endBox.destroyFigure();
+					delete kingMovements;
+					return true;
+				}
+				else
+				{
+					endBox.destroyFigure();
+				}
+			}
+		}
+	}
+	kingMovements->setRow(kingRowPosition);
+	kingMovements->setColumn(kingColumnPosition);
+	startBox.setFigure(*kingMovements);
+	delete kingMovements;
+	return false;
+}
+
+bool ChessBoard::protectKingWithOtherFigures(int figureRowPosition, int figureColumnPosition, int rowChange[], int columnChange[])
+{
+	ChessBox &startBox = *chessBoard[figureRowPosition][figureColumnPosition];
+	Figure *figureMovements = startBox.getFigure()->clone();
+	startBox.destroyFigure();
+
+	for (int i = 0; i < 4; i++)
+	{
+		int row = figureRowPosition;
+		int column = figureColumnPosition;
+		row = row + rowChange[i];
+		column = column + columnChange[i];
+		while (areValidChessBoxCoordinates(row, column))
+		{
+			if (chessBoard[row][column]->isFigureOn())
+			{
+				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != figureMovements->isWhiteFigure())
+				{
+					ChessBox &endBox = *chessBoard[row][column];
+					Figure *endBoxFigure = endBox.getFigure()->clone();
+					figureMovements->setRow(row);
+					figureMovements->setColumn(column);
+					endBox.setFigure(*figureMovements);
+					if (!isInChess(figureMovements->isWhiteFigure()))
+					{
+						figureMovements->setRow(figureRowPosition);
+						figureMovements->setColumn(figureColumnPosition);
+						startBox.setFigure(*figureMovements);
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+						delete figureMovements;
+						return true;
+					}
+					else
+					{
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+						break;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				ChessBox &endBox = *chessBoard[row][column];
+				figureMovements->setRow(row);
+				figureMovements->setColumn(column);
+				endBox.setFigure(*figureMovements);
+				if (!isInChess(figureMovements->isWhiteFigure()))
+				{
+					figureMovements->setRow(figureRowPosition);
+					figureMovements->setColumn(figureColumnPosition);
+					startBox.setFigure(*figureMovements);
+					endBox.destroyFigure();
+					delete figureMovements;
+					return true;
+				}
+				else
+				{
+					endBox.destroyFigure();
+				}
+			}
+			row = row + rowChange[i];
+			column = column + columnChange[i];
+		}
+	}
+	figureMovements->setRow(figureRowPosition);
+	figureMovements->setColumn(figureColumnPosition);
+	startBox.setFigure(*figureMovements);
+	delete figureMovements;
+	return false;
+}
+
+
 const ChessBox & ChessBoard::getChessBoxByCoordinates(int row, int column) const
 {
 	if (!areValidChessBoxCoordinates(row, column))
@@ -490,7 +845,7 @@ void ChessBoard::movePawnTo(Figure &pawn, int row, int column)
 		else
 		{
 			if (!chessBoxEnd.isFigureOn())
-			{ 
+			{
 				moveToEmptyBox(pawn, row, column);
 			}
 			else
@@ -524,7 +879,7 @@ void ChessBoard::moveOtherFigures(Figure & figure, int row, int column)
 		if (chessBoxEnd.isFigureOn())
 		{
 			if (chessBoxStart.getFigure()->isWhiteFigure() == chessBoxEnd.getFigure()->isWhiteFigure())
-			{ 
+			{
 				throw std::logic_error("Invalid movement! You cannot attack your figure! Move again!\n");
 			}
 			else

@@ -5,6 +5,7 @@ using namespace std;
 int main()
 {
 	ChessGame chess;
+
 	try
 	{
 		chess.startGame();
@@ -16,7 +17,7 @@ int main()
 		return -1;
 	}
 
-	while (true)
+	while (!chess.gameOver())
 	{
 		int fromRow;
 		char fromColumn;
