@@ -1,11 +1,11 @@
 #include "ChessBox.h"
 
-ChessBox::ChessBox(int row, int column, bool isWhite, const Figure & currentfigure) : currentFigure(nullptr), row(row), column(column), isWhite(isWhite)
+ChessBox::ChessBox(int row, int column, Color color, const Figure & currentfigure) : currentFigure(nullptr), row(row), column(column), color(color)
 {
 	setFigure(currentfigure);
 }
 
-ChessBox::ChessBox(int row, int column, bool isWhite) : row(row), column(column), isWhite(isWhite), currentFigure(nullptr)
+ChessBox::ChessBox(int row, int column, Color color) : row(row), column(column), color(color), currentFigure(nullptr)
 {
 }
 
@@ -39,9 +39,9 @@ int ChessBox::getColumn() const
 	return column;
 }
 
-bool ChessBox::getIsWhite() const
+Color ChessBox::colorFigure() const
 {
-	return isWhite;
+	return color;
 }
 
 Figure * ChessBox::getFigure() const
@@ -74,7 +74,7 @@ void ChessBox::copyFrom(const ChessBox & rhs)
 {
 	row = rhs.row;
 	column = rhs.column;
-	isWhite = rhs.isWhite;
+	color = rhs.color;
 	if (rhs.currentFigure != nullptr)
 	{
 		currentFigure = rhs.currentFigure->clone();

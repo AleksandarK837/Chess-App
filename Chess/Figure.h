@@ -7,12 +7,12 @@ using namespace GlobalVaribles;
 class Figure
 {
 public:
-	Figure(int row, int column, bool isWhite);
+	Figure(int row, int column, Color color);
 
 protected:
 	int row;
 	int column;
-	const bool isWhite;
+	Color color;
 	bool inPlay;
 
 public:
@@ -21,7 +21,7 @@ public:
 
 	int getRow() const;
 	int getColumn() const;
-	bool isWhiteFigure() const;
+	Color colorFigure() const;
 
 	bool isValidPosition(int row, int column) const;
 	void destroyFigure();

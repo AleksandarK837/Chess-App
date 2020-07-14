@@ -4,8 +4,8 @@
 class ChessBox
 {
 public:
-	ChessBox(int row, int column, bool isWhite, const Figure &currentfigure);
-	ChessBox(int row, int column, bool isWhite);
+	ChessBox(int row, int column, Color color, const Figure &currentfigure);
+	ChessBox(int row, int column, Color color);
 	ChessBox(const ChessBox &rhs);
 	ChessBox &operator=(const ChessBox &rhs);
 	~ChessBox();
@@ -13,13 +13,13 @@ public:
 private:
 	int row;
 	int column;
-	bool isWhite;
+	Color color;
 	Figure *currentFigure;
 
 public:
 	int getRow() const;
 	int getColumn() const;
-	bool getIsWhite() const;
+	Color colorFigure() const;
 	Figure *getFigure() const;
 	void setFigure(const Figure &figure);
 

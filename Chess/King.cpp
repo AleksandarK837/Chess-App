@@ -1,6 +1,6 @@
 #include "King.h"
 
-King::King(int row, int column, bool isWhite) : Figure(row, column, isWhite)
+King::King(int row, int column, Color color) : Figure(row, column, color)
 {
 }
 

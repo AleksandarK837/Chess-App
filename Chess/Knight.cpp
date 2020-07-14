@@ -1,6 +1,6 @@
 #include "Knight.h"
 
-Knight::Knight(int row, int column, bool isWhite) : Figure(row, column, isWhite)
+Knight::Knight(int row, int column, Color color) : Figure(row, column, color)
 {
 }
 

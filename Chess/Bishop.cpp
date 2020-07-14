@@ -1,6 +1,6 @@
 #include "Bishop.h"
 
-Bishop::Bishop(int row, int column, bool isWhite) : Figure(row, column, isWhite)
+Bishop::Bishop(int row, int column, Color color) : Figure(row, column, color)
 {
 }
 

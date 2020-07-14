@@ -1,6 +1,6 @@
 #include "Queen.h"
 
-Queen::Queen(int row, int column, bool isWhite) : Figure(row, column, isWhite)
+Queen::Queen(int row, int column, Color color) : Figure(row, column, color)
 {
 }
 

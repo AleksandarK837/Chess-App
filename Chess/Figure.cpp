@@ -1,6 +1,6 @@
 #include "Figure.h"
 
-Figure::Figure(int row, int column, bool isWhite) : isWhite(isWhite)
+Figure::Figure(int row, int column, Color color) : color(color)
 {
 	setRow(row);
 	setColumn(column);
@@ -35,9 +35,9 @@ int Figure::getColumn() const
 	return column;
 }
 
-bool Figure::isWhiteFigure() const
+Color Figure::colorFigure() const
 {
-	return isWhite;
+	return color;
 }
 
 bool Figure::isValidPosition(int row, int column) const

@@ -1,6 +1,6 @@
 #include "Pawn.h"
 
-Pawn::Pawn(int row, int column, bool isWhite) : Figure(row, column, isWhite)
+Pawn::Pawn(int row, int column, Color color) : Figure(row, column, color)
 {
 	isMoved = false;
 }
@@ -11,7 +11,7 @@ void Pawn::moveTo(int row, int column)
 	{
 		throw std::logic_error("Position is not valid!\n");
 	}
-	if (this->isWhite)
+	if (this->color == white)
 	{
 		bool moveOneStepUp = (this->row + 1 == row && this->column == column);
 		bool moveTwoStepsUp = (this->row + 2 == row && this->column == column);

@@ -1,6 +1,6 @@
 #include "Rook.h"
 
-Rook::Rook(int row, int column, bool isWhite) : Figure(row, column, isWhite)
+Rook::Rook(int row, int column, Color color) : Figure(row, column, color)
 {
 }
 

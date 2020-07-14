@@ -7,7 +7,7 @@ public:
 	ChessGame();
 
 private:
-	bool isWhitePlayerTurn;
+	Color playerTurn;
 	ChessBoard chessBoard;
 
 public:
