@@ -35,10 +35,11 @@ private:
 	bool freePathBetweenBoxesBishop(const ChessBox &start, const ChessBox &end);
 
 	bool playerHasPossileMoves(const Figure &figure);
+	bool canMoveKing(int kingRowPosition, int kingColumnPosition);
 	bool protectKingWithKnight(int knightRowPosition, int knightColumnPosition);
 	bool protectKingWithPawn(int pawnRowPosition, int pawnColumnPosition);
-	bool canMoveKing(int kingRowPosition, int kingColumnPosition);
-	bool protectKingWithOtherFigures(int figureRowPosition, int figureColumnPosition, int rowChange[], int columnChange[]);
+	bool protectKingWithBishop(int bishopRowPosition, int bishopColumnPosition);
+	bool protectKingWithRook(int rookRowPosition, int rookColumnPosition);
 
 	bool isInChess(bool isWhiteKing) const;
 	bool areValidChessBoxCoordinates(int row, int column) const;

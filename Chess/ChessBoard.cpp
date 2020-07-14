@@ -47,14 +47,12 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 	const ChessBox &kingSBox = getKingsBox(isWhiteKing);
 
 	// check rook and queen
-	int rowChange[] = { -1,1,0,0 };
-	int columnChange[] = { 0, 0, 1, -1 };
 	for (int i = 0; i < 4; i++)
 	{
 		int row = kingSBox.getRow();
 		int column = kingSBox.getColumn();
-		row = row + rowChange[i];
-		column = column + columnChange[i];
+		row = row + rowRookChange[i];
+		column = column + columnRookChange[i];
 		while (areValidChessBoxCoordinates(row, column))
 		{
 			if (chessBoard[row][column]->isFigureOn())
@@ -76,13 +74,11 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 					break;
 				}
 			}
-			row = row + rowChange[i];
-			column = column + columnChange[i];
+			row = row + rowRookChange[i];
+			column = column + columnRookChange[i];
 		}
 	}
 	//check knight 
-	int rowKnightChange[] = { 1, 1, -1, -1, 2, -2, 2, -2 };
-	int columnKnightChange[] = { 2, -2, 2, -2, 1, 1, -1, -1 };
 	for (int i = 0; i < 8; i++)
 	{
 		int row = kingSBox.getRow();
@@ -102,8 +98,6 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 		}
 	}
 	//check Bishop and Queen
-	int rowBishopChange[] = { 1, 1, -1, -1 };
-	int columnBishopChange[] = { -1, 1, -1, 1 };
 	for (int i = 0; i < 4; i++)
 	{
 		int row = kingSBox.getRow();
@@ -137,7 +131,6 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 	}
 
 	//check Pawn
-	int pawnColumnChange[] = { -1, 1 }; // pawn must be left or right king's position
 	int pawnRowChange = 1; //if the king si white - the pawn is one row up
 
 	if (!isWhiteKing)
@@ -161,8 +154,6 @@ bool ChessBoard::isInChess(bool isWhiteKing) const
 		}
 
 		//check King
-		int rowKingChange[] = { 1, 1, 1, 0, 0, -1, -1, -1 };
-		int columnKingChange[] = { 1, 0, -1, 1, -1, -1, 0, 1 };
 		for (int i = 0; i < 8; i++)
 		{
 			int row = kingSBox.getRow();
@@ -430,12 +421,6 @@ bool ChessBoard::isCheckmate(bool isWhitePlayer)
 
 bool ChessBoard::playerHasPossileMoves(const Figure &figure)
 {
-	int rowBishopChange[] = { 1, 1, -1, -1 };
-	int columnBishopChange[] = { -1, 1, -1, 1 };
-
-	int rowRookChange[] = { -1,1,0,0 };
-	int columnRookChange[] = { 0, 0, 1, -1 };
-
 	int row = figure.getRow();
 	int column = figure.getColumn();
 	if (figure.getFigureType() == "Knight")
@@ -448,16 +433,16 @@ bool ChessBoard::playerHasPossileMoves(const Figure &figure)
 	}
 	else if (figure.getFigureType() == "Bishop")
 	{
-		return protectKingWithOtherFigures(row, column, rowBishopChange, columnBishopChange);
+		return protectKingWithBishop(row, column);
 	}
 	else if (figure.getFigureType() == "Rook")
 	{
-		return protectKingWithOtherFigures(row, column, rowRookChange, columnRookChange);
+		return protectKingWithBishop(row, column);
 	}
 	else if (figure.getFigureType() == "Queen")
 	{ // move Queen like rook or bishop
-		return protectKingWithOtherFigures(row, column, rowBishopChange, columnBishopChange) ||
-			   protectKingWithOtherFigures(row, column, rowRookChange, columnRookChange);
+		return protectKingWithBishop(row, column) ||
+			   protectKingWithRook(row, column);
 	}
 	else
 	{
@@ -467,8 +452,6 @@ bool ChessBoard::playerHasPossileMoves(const Figure &figure)
 
 bool ChessBoard::protectKingWithKnight(int knightRowPosition, int knightColumnPosition)
 {
-	int rowKnightChange[] = { 1, 1, -1, -1, 2, -2, 2, -2 };
-	int columnKnightChange[] = { 2, -2, 2, -2, 1, 1, -1, -1 };
 	ChessBox &startBox = *chessBoard[knightRowPosition][knightColumnPosition];
 	Figure *knightMovements = startBox.getFigure()->clone();
 	startBox.destroyFigure();
@@ -543,8 +526,8 @@ bool ChessBoard::protectKingWithPawn(int pawnRowPosition, int pawnColumnPosition
 	startBox.destroyFigure();
 	int row = pawnRowPosition;
 	int column = pawnColumnPosition;
+
 	int pawnRowChange = 1;
-	int pawnColumnChange[] = { -1, 1 };
 	if (!pawnMovements->isWhiteFigure())
 	{
 		pawnRowChange = -1;
@@ -611,8 +594,6 @@ bool ChessBoard::protectKingWithPawn(int pawnRowPosition, int pawnColumnPosition
 
 bool ChessBoard::canMoveKing(int kingRowPosition, int kingColumnPosition)
 {
-	int rowKingChange[] = { 1, 1, 1, 0, 0, -1, -1, -1 };
-	int columnKingChange[] = { 1, 0, -1, 1, -1, -1, 0, 1 };
 	ChessBox &startBox = *chessBoard[kingRowPosition][kingColumnPosition];
 	Figure *kingMovements = startBox.getFigure()->clone();
 	startBox.destroyFigure();
@@ -680,37 +661,37 @@ bool ChessBoard::canMoveKing(int kingRowPosition, int kingColumnPosition)
 	return false;
 }
 
-bool ChessBoard::protectKingWithOtherFigures(int figureRowPosition, int figureColumnPosition, int rowChange[], int columnChange[])
+bool ChessBoard::protectKingWithBishop(int bishopRowPosition, int bishopColumnPosition)
 {
-	ChessBox &startBox = *chessBoard[figureRowPosition][figureColumnPosition];
-	Figure *figureMovements = startBox.getFigure()->clone();
+	ChessBox &startBox = *chessBoard[bishopRowPosition][bishopColumnPosition];
+	Figure *bishopMovements = startBox.getFigure()->clone();
 	startBox.destroyFigure();
 
 	for (int i = 0; i < 4; i++)
 	{
-		int row = figureRowPosition;
-		int column = figureColumnPosition;
-		row = row + rowChange[i];
-		column = column + columnChange[i];
+		int row = bishopRowPosition;
+		int column = bishopColumnPosition;
+		row = row + rowBishopChange[i];
+		column = column + columnBishopChange[i];
 		while (areValidChessBoxCoordinates(row, column))
 		{
 			if (chessBoard[row][column]->isFigureOn())
 			{
-				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != figureMovements->isWhiteFigure())
+				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != bishopMovements->isWhiteFigure())
 				{
 					ChessBox &endBox = *chessBoard[row][column];
 					Figure *endBoxFigure = endBox.getFigure()->clone();
-					figureMovements->setRow(row);
-					figureMovements->setColumn(column);
-					endBox.setFigure(*figureMovements);
-					if (!isInChess(figureMovements->isWhiteFigure()))
+					bishopMovements->setRow(row);
+					bishopMovements->setColumn(column);
+					endBox.setFigure(*bishopMovements);
+					if (!isInChess(bishopMovements->isWhiteFigure()))
 					{
-						figureMovements->setRow(figureRowPosition);
-						figureMovements->setColumn(figureColumnPosition);
-						startBox.setFigure(*figureMovements);
+						bishopMovements->setRow(bishopRowPosition);
+						bishopMovements->setColumn(bishopColumnPosition);
+						startBox.setFigure(*bishopMovements);
 						endBox.setFigure(*endBoxFigure);
 						delete endBoxFigure;
-						delete figureMovements;
+						delete bishopMovements;
 						return true;
 					}
 					else
@@ -728,16 +709,16 @@ bool ChessBoard::protectKingWithOtherFigures(int figureRowPosition, int figureCo
 			else
 			{
 				ChessBox &endBox = *chessBoard[row][column];
-				figureMovements->setRow(row);
-				figureMovements->setColumn(column);
-				endBox.setFigure(*figureMovements);
-				if (!isInChess(figureMovements->isWhiteFigure()))
+				bishopMovements->setRow(row);
+				bishopMovements->setColumn(column);
+				endBox.setFigure(*bishopMovements);
+				if (!isInChess(bishopMovements->isWhiteFigure()))
 				{
-					figureMovements->setRow(figureRowPosition);
-					figureMovements->setColumn(figureColumnPosition);
-					startBox.setFigure(*figureMovements);
+					bishopMovements->setRow(bishopRowPosition);
+					bishopMovements->setColumn(bishopColumnPosition);
+					startBox.setFigure(*bishopMovements);
 					endBox.destroyFigure();
-					delete figureMovements;
+					delete bishopMovements;
 					return true;
 				}
 				else
@@ -745,14 +726,90 @@ bool ChessBoard::protectKingWithOtherFigures(int figureRowPosition, int figureCo
 					endBox.destroyFigure();
 				}
 			}
-			row = row + rowChange[i];
-			column = column + columnChange[i];
+			row = row + rowBishopChange[i];
+			column = column + columnBishopChange[i];
 		}
 	}
-	figureMovements->setRow(figureRowPosition);
-	figureMovements->setColumn(figureColumnPosition);
-	startBox.setFigure(*figureMovements);
-	delete figureMovements;
+	bishopMovements->setRow(bishopRowPosition);
+	bishopMovements->setColumn(bishopColumnPosition);
+	startBox.setFigure(*bishopMovements);
+	delete bishopMovements;
+	return false;
+}
+
+bool ChessBoard::protectKingWithRook(int rookRowPosition, int figureColumnPosition)
+{
+	ChessBox &startBox = *chessBoard[rookRowPosition][figureColumnPosition];
+	Figure *rookMovements = startBox.getFigure()->clone();
+	startBox.destroyFigure();
+
+	for (int i = 0; i < 4; i++)
+	{
+		int row = rookRowPosition;
+		int column = figureColumnPosition;
+		row = row + rowRookChange[i];
+		column = column + columnRookChange[i];
+		while (areValidChessBoxCoordinates(row, column))
+		{
+			if (chessBoard[row][column]->isFigureOn())
+			{
+				if (chessBoard[row][column]->getFigure()->isWhiteFigure() != rookMovements->isWhiteFigure())
+				{
+					ChessBox &endBox = *chessBoard[row][column];
+					Figure *endBoxFigure = endBox.getFigure()->clone();
+					rookMovements->setRow(row);
+					rookMovements->setColumn(column);
+					endBox.setFigure(*rookMovements);
+					if (!isInChess(rookMovements->isWhiteFigure()))
+					{
+						rookMovements->setRow(rookRowPosition);
+						rookMovements->setColumn(figureColumnPosition);
+						startBox.setFigure(*rookMovements);
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+						delete rookMovements;
+						return true;
+					}
+					else
+					{
+						endBox.setFigure(*endBoxFigure);
+						delete endBoxFigure;
+						break;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				ChessBox &endBox = *chessBoard[row][column];
+				rookMovements->setRow(row);
+				rookMovements->setColumn(column);
+				endBox.setFigure(*rookMovements);
+				if (!isInChess(rookMovements->isWhiteFigure()))
+				{
+					rookMovements->setRow(rookRowPosition);
+					rookMovements->setColumn(figureColumnPosition);
+					startBox.setFigure(*rookMovements);
+					endBox.destroyFigure();
+					delete rookMovements;
+					return true;
+				}
+				else
+				{
+					endBox.destroyFigure();
+				}
+			}
+			row = row + rowRookChange[i];
+			column = column + columnRookChange[i];
+		}
+	}
+	rookMovements->setRow(rookRowPosition);
+	rookMovements->setColumn(figureColumnPosition);
+	startBox.setFigure(*rookMovements);
+	delete rookMovements;
 	return false;
 }
 
