@@ -29,7 +29,7 @@ void ChessGame::moveFigure(int fromRow, char fromColumn, int toRow, char toColum
 		const ChessBox &startBox = chessBoard.getChessBoxByCoordinates(fromRow - 1, (int)fromColumn - 97);
 		const ChessBox &endBox = chessBoard.getChessBoxByCoordinates(toRow - 1, (int)toColumn - 97);
 		moveFigure(startBox, endBox);
-		playerTurn == white ? dark : white;
+		playerTurn = playerTurn == white ? dark : white;
 		cout << "Successfully moved from " << fromRow << fromColumn << " to " << toRow << toColumn << endl;
 	}
 	catch (const std::logic_error &e)

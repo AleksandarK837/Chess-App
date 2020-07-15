@@ -348,7 +348,7 @@ void ChessBoard::placeFigures()
 	{
 		chessBoard[1][i] = new ChessBox(1, i, colorBox, Pawn(1, i, white)); // place white pawns
 		chessBoard[6][i] = new ChessBox(6, i, colorBox == white? dark : white, Pawn(6, i, dark)); //place black pawns
-		colorBox == white ? dark : white;
+		colorBox = colorBox == white ? dark : white;
 	}
 
 	colorBox = dark;
@@ -379,7 +379,7 @@ void ChessBoard::placeFigures()
 			chessBoard[0][i] = new ChessBox(0, i, colorBox, King(0, i, white)); //place white King
 			chessBoard[7][i] = new ChessBox(7, i, colorBox == white ? dark : white, King(7, i, dark)); //place black King
 		}
-		colorBox == white ? dark : white;
+		colorBox = colorBox == white ? dark : white;
 	}
 	colorBox = white;
 	for (int i = 2; i < ROW_SIZE - 2; i++)
@@ -387,7 +387,7 @@ void ChessBoard::placeFigures()
 		for (int j = 0; j < COLUMN_SIZE; j++)
 		{
 			chessBoard[i][j] = new ChessBox(i, j, colorBox); // place empty boxes
-			colorBox == white ? dark : white;
+			colorBox = colorBox == white ? dark : white;
 		}
 	}
 }

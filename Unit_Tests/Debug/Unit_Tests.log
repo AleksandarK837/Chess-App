@@ -1,0 +1,3 @@
+﻿  unittest1.cpp
+d:\c++ projects\chess\chess\chessboard.cpp(178): warning C4715: 'ChessBoard::isInChess': not all control paths return a value
+  Unit_Tests.vcxproj -> D:\C++ projects\Chess\Debug\Unit_Tests.dll

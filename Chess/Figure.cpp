@@ -18,7 +18,7 @@ void Figure::setRow(int row)
 
 void Figure::setColumn(int column)
 {
-	if (column > COLUMN_SIZE - 1 and column < 0)
+	if (column > COLUMN_SIZE - 1 && column < 0)
 	{
 		throw std::logic_error("Invalid column corrdinate!\n");
 	}
@@ -42,7 +42,7 @@ Color Figure::colorFigure() const
 
 bool Figure::isValidPosition(int row, int column) const
 {
-	if (this->row == row and this->column == column)
+	if (this->row == row && this->column == column)
 	{
 		return false;
 	}

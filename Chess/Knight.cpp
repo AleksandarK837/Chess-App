@@ -15,7 +15,7 @@ void Knight::moveTo(int row, int column)
 	int absRow = abs(this->row - row);
 	int absCol = abs(this->column - column);
 
-	if ((absRow == 2 && absCol == 1) || (absRow == 1 and absCol == 2))
+	if ((absRow == 2 && absCol == 1) || (absRow == 1 && absCol == 2))
 	{
 		setRow(row);
 		setColumn(column);

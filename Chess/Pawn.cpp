@@ -15,8 +15,8 @@ void Pawn::moveTo(int row, int column)
 	{
 		bool moveOneStepUp = (this->row + 1 == row && this->column == column);
 		bool moveTwoStepsUp = (this->row + 2 == row && this->column == column);
-		bool moveUpLeft = (this->row + 1 == row and this->column - 1 == column);
-		bool moveUpRight = (this->row + 1 == row and this->column + 1 == column);
+		bool moveUpLeft = (this->row + 1 == row && this->column - 1 == column);
+		bool moveUpRight = (this->row + 1 == row && this->column + 1 == column);
 
 		if (this->isMoved)
 		{
@@ -48,8 +48,8 @@ void Pawn::moveTo(int row, int column)
 	{
 		bool moveOneStepUp = (this->row - 1 == row && this->column == column);
 		bool moveTwoStepsUp = (this->row - 2 == row && this->column == column);
-		bool moveUpLeft = (this->row - 1 == row and this->column - 1 == column);
-		bool moveUpRight = (this->row - 1 == row and this->column + 1 == column);
+		bool moveUpLeft = (this->row - 1 == row && this->column - 1 == column);
+		bool moveUpRight = (this->row - 1 == row && this->column + 1 == column);
 
 		if (this->isMoved)
 		{
